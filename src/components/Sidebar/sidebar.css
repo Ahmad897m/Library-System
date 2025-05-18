@@ -1,0 +1,13 @@
+.nav-link.active {
+    border: 1px solid chocolate;
+    border-radius: 8px;
+    color: chocolate !important;
+}
+
+.nav-link {
+    color: var(--main-paragraph-color);
+}
+
+.nav-link:hover {
+    color: chocolate;
+}
