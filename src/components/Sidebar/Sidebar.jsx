@@ -14,11 +14,11 @@ const Sidebar = () => {
 
     return(
         <>
-            <div className="d-flex flex-column bg-light vh-100 p-3 shadow-sm " style={{minWidth:'300p'}}>
+            <div className="d-flex flex-column bg-light vh-150 p-3 shadow-sm " style={{minWidth:'300p'}}>
                 <h4 className="mb-4">Library Management </h4>
                 <ul className="nav flex-column">
                     <li className="nav-item mb-2"> 
-                        <NavLink to='/Dashboard'  className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link '}> <MdDashboard /> Dashboard</NavLink> 
+                        <NavLink to='/'  className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link '}> <MdDashboard /> Dashboard</NavLink> 
                     </li>
 
                      <li className="nav-item mb-2">
@@ -34,15 +34,19 @@ const Sidebar = () => {
                         </li>
 
                      <li className="nav-item mb-2">
-                         <NavLink to='/Categories'  className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}> <GiBookmarklet /> Categories</NavLink>
+                         <NavLink to='/ReadingRoom'  className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}> <GiBookmarklet /> Reading Room</NavLink>
                         </li>
 
                      <li className="nav-item mb-2">
-                         <NavLink to='/Notifications'  className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}> <MdNotificationsActive /> Notifications</NavLink> 
+                         <NavLink to='/Sales'  className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}> <MdNotificationsActive /> Sales</NavLink> 
                         </li>
 
                      <li className="nav-item mb-2">
-                         <NavLink to='/Report'  className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}> <HiOutlineDocumentReport /> Reports</NavLink> 
+                         <NavLink to='/Customers'  className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}> <HiOutlineDocumentReport /> Customers</NavLink> 
+                        </li>
+
+                     <li className="nav-item mb-2">
+                         <NavLink to='/Notifications'  className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}> <HiOutlineDocumentReport /> Notifications</NavLink> 
                         </li>
 
                      <li className="nav-item mb-2">

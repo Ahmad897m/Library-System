@@ -6,7 +6,7 @@ const Header = () => {
   return (
     <Navbar bg="light" expand="lg" className="shadow-sm" style={{ height: '70px' }}>
       <Container fluid>
-        <Navbar.Brand href="/Dashboard" className="fw-bold">
+        <Navbar.Brand href="/" className="fw-bold">
           📚 Library Management
         </Navbar.Brand>
 
