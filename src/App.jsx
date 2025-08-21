@@ -11,6 +11,8 @@ import ReadingOnly from './components/ReadingOnly/ReadingOnly';
 import Sales from './components/Sales/Sales';
 import Customer from './components/Customers/Customer';
 import Notifications from './components/Notifications/Notifications';
+import AddNewCustomer from './components/AddNewCustomer/AddNewCustomer';
+import SettingsPage from './components/settings/Settings';
 
 function App() {
 
@@ -68,18 +70,20 @@ function App() {
         <Routes>
           <Route path='/' element={<Dashboard />} />
           <Route path='/AddNewBook' element={<AddBook />} />
+          <Route path='/AddNewCustomer' element={<AddNewCustomer />} />
           <Route path='/BookManagement' element={<BooksManagement />} />
           <Route path='/Issue-Return' element={<IssueBook   addCustomerLog={addCustomerLog} />} />
           <Route path='/ReadingRoom' element={<ReadingOnly books = {books}   addCustomerLog={addCustomerLog} />} />
           <Route path='/Sales' element={<Sales books = {books}   addCustomerLog={addCustomerLog} />} />
           <Route path='/Customers' element={<Customer   customersLog={customersLog} />} />
           <Route path='/Notifications' element={<Notifications   customersLog={customersLog} />} />
+          <Route path='/Settings' element={<SettingsPage    customersLog={customersLog} />} />
 
         </Routes>
       </div>
       </div>
-      
-    </div>
+          </div>
+
   );
 }
 

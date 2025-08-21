@@ -1,35 +1,30 @@
 import React from "react";
 import './header.css'
 import { Container, Navbar, Form, FormControl, Dropdown } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 const Header = () => {
+    const { t, i18n } = useTranslation();
+      const isArabic = i18n.language === 'ar';
+
+  
   return (
-    <Navbar bg="light" expand="lg" className="shadow-sm" style={{ height: '70px' }}>
+    <Navbar bg="light" expand="lg" className="shadow-sm" style={{ height: '70px' , 
+      direction: isArabic ? 'rtl' : 'ltr',
+      textAlign: isArabic ? 'right' : 'left' }}>
       <Container fluid>
         <Navbar.Brand href="/" className="fw-bold">
-          📚 Library Management
+          {t("libraryManagement")}
         </Navbar.Brand>
 
         <Form className="d-flex ms-auto me-3" style={{ maxWidth: '300px', width: '100%' }}>
           <FormControl
             type="search"
-            placeholder="Search books..."
+            placeholder={t("searchBooks")}
             className="me-2"
             aria-label="Search"
           />
         </Form>
-
-        <Dropdown align="end">
-          <Dropdown.Toggle variant="outline-secondary" id="dropdown-user">
-            👤 Ahmad
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu>
-            <Dropdown.Item href="#/settings">Settings</Dropdown.Item>
-            <Dropdown.Divider />
-            <Dropdown.Item href="#/logout">Logout</Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
       </Container>
     </Navbar>
   );

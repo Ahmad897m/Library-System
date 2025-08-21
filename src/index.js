@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import App from './App';
+import './i18n'; // This must be at the top before App runs
+
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

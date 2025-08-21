@@ -1,0 +1,11 @@
+.add {
+    background: chocolate;
+    border: none;
+    padding: 15px;
+    font-size: 20px;
+    letter-spacing: 1.2px;
+    margin-bottom: 2rem;
+    display: block;
+    margin: 0 auto 2rem auto;
+    transition: 0.8s ease;
+}

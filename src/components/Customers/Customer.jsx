@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import './customer.css'
+import { useTranslation } from "react-i18next";
 
 const Customer = ({customersLog}) => {
+    const { t } = useTranslation();
+  
 
     const [filter, setFilter] = useState("All")
 
@@ -11,17 +14,17 @@ const Customer = ({customersLog}) => {
     return(
         <>
             <div className="container py-4">
-                      <h3>👥 Customers Log</h3>
+                      <h3>{t("customers_log")}</h3>
 
                       <div className="btn-group mb-3 mt-3" role="group">
-                        <button className={`btn btn-outline-primary ${filter === 'All' ? 'active' : ''}`} onClick={() => setFilter("All")}>All</button>
-                        <button className={`btn btn-outline-secondary ${filter === 'Read' ? 'active' : ''}`} onClick={() => setFilter("Read")}>Read</button>
-                        <button className={`btn btn-outline-success ${filter === 'Buy' ? 'active' : ''}`} onClick={() => setFilter("Buy")}>Purchases</button>
-                        <button className={`btn btn-outline-warning ${filter === 'Borrow' ? 'active' : ''}`} onClick={() => setFilter("Borrow")}>Borrowing</button>
+                        <button className={`btn btn-outline-primary ${filter === 'All' ? 'active' : ''}`} onClick={() => setFilter("All")}>{t("all")}</button>
+                        <button className={`btn btn-outline-secondary ${filter === 'Read' ? 'active' : ''}`} onClick={() => setFilter("Read")}>{t("read")}</button>
+                        <button className={`btn btn-outline-success ${filter === 'Buy' ? 'active' : ''}`} onClick={() => setFilter("Buy")}>{t("purchases")}</button>
+                        <button className={`btn btn-outline-warning ${filter === 'Borrow' ? 'active' : ''}`} onClick={() => setFilter("Borrow")}>{t("borrowing")}</button>
                       </div>
 
                           {filteredCustomers.length === 0 ? (
-        <div className="alert alert-warning">❗ No records found.</div>
+        <div className="alert alert-warning"> {t("no_records")} </div>
       ) : (
         <ul className="list-group">
           {filteredCustomers.map((cust) => (
@@ -34,7 +37,7 @@ const Customer = ({customersLog}) => {
 
       <hr className="my-4" />
       <div className="alert alert-info">
-        📊 Total Transactions: <strong>{customersLog.length}</strong>
+        {t("total_transactions")} <strong>{customersLog.length}</strong>
       </div>
                       
           </div>
