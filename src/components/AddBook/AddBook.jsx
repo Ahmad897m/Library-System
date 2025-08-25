@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import './addBook.css'
+import './addBook.css';
+import { addBook } from "../../services/apiService";
 
 const AddBook = () => {
     const { t } = useTranslation();
@@ -18,6 +19,7 @@ const AddBook = () => {
     });
 
     const [successMessage, setSuccessMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleChange = (e) => {
         const {name, value, files} = e.target;
@@ -27,26 +29,45 @@ const AddBook = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Book data Submitted", book);
-        setSuccessMessage(true);
+        
+        try {
+            // Create a new book object without the cover file
+            // since JSON Server can't handle file uploads
+            const bookData = {
+                ...book,
+                cover: book.cover ? book.cover.name : null, // Just store the filename
+                id: Date.now() // Generate a unique ID
+            };
+            
+            // Call the API service to add the book
+            await addBook(bookData);
+            
+            setSuccessMessage(true);
+            setErrorMessage("");
 
-        setTimeout(() => setSuccessMessage(false), 4000);
+            setTimeout(() => setSuccessMessage(false), 4000);
 
-        setBook({
-            title: '',
-            author: '',
-            publishedDate: '',
-            category: '',
-            status: '',
-            price:'',
-            copies: '',
-            description: '',
-            cover: null,
-        });
+            // Reset the form
+            setBook({
+                title: '',
+                author: '',
+                publishedDate: '',
+                category: '',
+                status: '',
+                price:'',
+                copies: '',
+                description: '',
+                cover: null,
+            });
 
-        document.getElementById("coverInput").value = '';
+            document.getElementById("coverInput").value = '';
+        } catch (error) {
+            console.error("Error adding book:", error);
+            setErrorMessage("Failed to add book. Please try again.");
+            setTimeout(() => setErrorMessage(""), 4000);
+        }
     };
 
     return(
@@ -57,6 +78,12 @@ const AddBook = () => {
                 {successMessage && (
                     <div className="alert alert-success mt-3" role="alert">
                         ✅ {t('bookAddedSuccess')}
+                    </div>
+                )}
+
+                {errorMessage && (
+                    <div className="alert alert-danger mt-3" role="alert">
+                        ❌ {errorMessage}
                     </div>
                 )}
 

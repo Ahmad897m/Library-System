@@ -1,0 +1,28 @@
+{
+  "books": [
+    {
+      "id": "1756129688256",
+      "title": "Magnam animi repreh",
+      "author": "Tenetur impedit qui",
+      "publishedDate": "1972-08-08",
+      "category": "Voluptas consequat ",
+      "status": "Ullamco quasi lorem ",
+      "price": "871",
+      "copies": "77",
+      "description": "Ut laborum nihil omn",
+      "cover": "beo.png"
+    }
+  ],
+  "customers": [
+    {
+      "id": "911f",
+      "fullName": "Oprah Quinn",
+      "email": "dewajezasi@mailinator.com",
+      "phone": "+1 (815) 991-6052",
+      "address": "Facilis expedita est",
+      "dateOfBirth": "1973-05-10",
+      "memberId": "LIB-653163",
+      "joinDate": "2025-08-25"
+    }
+  ]
+}

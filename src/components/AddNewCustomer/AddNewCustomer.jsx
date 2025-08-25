@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import './addNewCustomer.css';
+import { addCustomer } from "../../services/apiService";
 
 const AddNewCustomer = () => {
   const { t } = useTranslation();
@@ -24,17 +25,45 @@ const AddNewCustomer = () => {
   });
 
   const [successMessage, setSuccessMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('New Customer:', formData);
-    setSuccessMessage(true);
-    // يمكنك هنا استدعاء API أو تحديث الحالة في التطبيق
+    
+    try {
+      // Add customer to the API
+      await addCustomer(formData);
+      
+      // Show success message
+      setSuccessMessage(true);
+      setErrorMessage("");
+      
+      // Reset form after 4 seconds
+      setTimeout(() => {
+        setSuccessMessage(false);
+        
+        // Reset form data but generate new ID
+        setFormData({
+          fullName: '',
+          email: '',
+          phone: '',
+          address: '',
+          dateOfBirth: '',
+          memberId: generateMemberId(),
+          joinDate: getTodayDate(),
+        });
+      }, 4000);
+    } catch (error) {
+      console.error("Error adding customer:", error);
+      setErrorMessage("Failed to add customer. Please try again.");
+      setSuccessMessage(false);
+      setTimeout(() => setErrorMessage(""), 4000);
+    }
   };
 
   return (
@@ -44,6 +73,12 @@ const AddNewCustomer = () => {
       {successMessage && (
         <div className="alert alert-success mt-3" role="alert">
           ✅ {t('addNewCustomer.successMessage')}
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="alert alert-danger mt-3" role="alert">
+          ❌ {errorMessage}
         </div>
       )}
 
