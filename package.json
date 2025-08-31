@@ -1,7 +1,7 @@
 {
   "name": "library",
   "version": "0.1.0",
-  "homepage": "https://Ahmad897m.github.io/Library-System",
+  "homepage": "/",
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",

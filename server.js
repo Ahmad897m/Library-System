@@ -121,10 +121,10 @@ app.delete("/api/customers/:id", (req, res) => {
 
 // Serve React build in production
 if (process.env.NODE_ENV === "production") {
+  // Serve static files from the React app
   app.use(express.static(path.join(__dirname, "build")));
   
-  // Fix for path-to-regexp error in Express 5.1.0
-  // Using regex pattern instead of wildcard "*"
+  // Handle React routing, return all requests to React app
   app.get(/(.*)/, (req, res) => {
     res.sendFile(path.join(__dirname, "build", "index.html"));
   });
