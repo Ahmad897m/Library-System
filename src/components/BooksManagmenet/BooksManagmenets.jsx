@@ -113,10 +113,8 @@ const BooksManagement = () => {
         ) : (
           <>
             <table className="books-table">
-              // In your table, add a column for the cover image
               <thead>
                 <tr>
-                  <th>{t("tableCover")}</th>
                   <th>{t("tableTitle")}</th>
                   <th>{t("tableAuthor")}</th>
                   <th>{t("tableReleaseDate")}</th>
@@ -130,20 +128,9 @@ const BooksManagement = () => {
               <tbody>
                 {filteredBooks.slice(0, visibleBooksCount).map((book) => (
                   <tr key={book.id}>
-                    <td>
-                      {book.cover ? (
-                        <img 
-                          src={`${process.env.PUBLIC_URL}/images/${book.cover}`} 
-                          alt={book.title}
-                          style={{ width: '50px', height: 'auto' }} 
-                        />
-                      ) : (
-                        <div className="no-cover">{t("noCover")}</div>
-                      )}
-                    </td>
                     <td>{book.title}</td>
                     <td>{book.author}</td>
-                    <td>{book.releaseDate}</td>
+                    <td>{book.publishedDate}</td>
                     <td>{book.category}</td>
                     <td>{book.status}</td>
                     <td className="text-center">{book.price}</td>
