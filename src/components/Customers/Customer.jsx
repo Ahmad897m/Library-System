@@ -495,6 +495,5 @@ const Customer = () => {
     </div>
   );
 }
->>>>>>> a54e7bd01fb84ee8c45311d46e938f2e597b7678
 
 export default Customer;
