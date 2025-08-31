@@ -123,7 +123,9 @@ app.delete("/api/customers/:id", (req, res) => {
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "build")));
   
-  app.get("*", (req, res) => {
+  // Fix for path-to-regexp error in Express 5.1.0
+  // Using regex pattern instead of wildcard "*"
+  app.get(/(.*)/, (req, res) => {
     res.sendFile(path.join(__dirname, "build", "index.html"));
   });
 } else {
