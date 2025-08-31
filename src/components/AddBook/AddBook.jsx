@@ -1,52 +1,112 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useAppDispatch } from '../../redux/hooks';
+import { addBook } from '../../redux/slices/bookSlice';
 import './addBook.css'
 
 const AddBook = () => {
     const { t } = useTranslation();
+    const dispatch = useAppDispatch();
 
     const [book, setBook] = useState({
         title: '',
         author: '',
         publishedDate: '',
         category: '',
-        status: '',
-        price:'',
+        status: 'reading', // قيمة افتراضية
+        price: '',
         copies: '',
         description: '',
-        cover: null,
     });
 
     const [successMessage, setSuccessMessage] = useState(false);
 
     const handleChange = (e) => {
-        const {name, value, files} = e.target;
+        const { name, value } = e.target;
+        
+        // منع القيم السالبة في عدد النسخ والسعر
+        if ((name === 'copies' || name === 'price') && value !== '') {
+            const numericValue = parseFloat(value);
+            if (numericValue < 0) return;
+        }
+        
         setBook((prev) => ({
             ...prev,
-            [name]: files ? files[0] : value,
+            [name]: value,
         }));
+    };
+
+    // دالة للتحقق من المدخلات ومنع القيم السالبة أثناء الكتابة
+    const handleKeyPress = (e, fieldName) => {
+        // السماح فقط بالأرقام والنقطة (للسعر) ومفاتيح التحكم
+        if (fieldName === 'price' && e.key === '.' && e.target.value.includes('.')) {
+            e.preventDefault(); // منع إدخال أكثر من نقطة واحدة
+            return;
+        }
+        
+        if (!/[\d.]/.test(e.key) && 
+            e.key !== 'Backspace' && 
+            e.key !== 'Delete' && 
+            e.key !== 'ArrowLeft' && 
+            e.key !== 'ArrowRight' && 
+            e.key !== 'Tab') {
+            e.preventDefault();
+        }
+    };
+
+    // دالة للتحقق من القيم بعد الإدخال
+    const handleBlur = (e, fieldName) => {
+        const value = e.target.value;
+        
+        if ((fieldName === 'copies' || fieldName === 'price') && value !== '') {
+            const numericValue = parseFloat(value);
+            
+            if (numericValue < 0) {
+                setBook((prev) => ({
+                    ...prev,
+                    [fieldName]: fieldName === 'copies' ? '1' : '0'
+                }));
+            }
+            
+            // التأكد من أن عدد النسخ لا يقل عن 1
+            if (fieldName === 'copies' && numericValue < 1) {
+                setBook((prev) => ({
+                    ...prev,
+                    copies: '1'
+                }));
+            }
+        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("Book data Submitted", book);
+        
+        // تحويل القيم الرقمية إلى أرقام مع التحقق من القيم السالبة
+        const bookToAdd = {
+            ...book,
+            price: book.price ? Math.max(0, parseFloat(book.price)) : 0,
+            copies: book.copies ? Math.max(1, parseInt(book.copies)) : 1,
+            // إذا كان للقراءة فقط، نجعل السعر 0
+            price: book.status === 'reading' ? 0 : (book.price ? Math.max(0, parseFloat(book.price)) : 0)
+        };
+        
+        // إضافة الكتاب عبر Redux
+        dispatch(addBook(bookToAdd));
+        
         setSuccessMessage(true);
-
         setTimeout(() => setSuccessMessage(false), 4000);
 
+        // مسح الحقول
         setBook({
             title: '',
             author: '',
             publishedDate: '',
             category: '',
-            status: '',
-            price:'',
+            status: 'reading',
+            price: '',
             copies: '',
             description: '',
-            cover: null,
         });
-
-        document.getElementById("coverInput").value = '';
     };
 
     return(
@@ -83,30 +143,52 @@ const AddBook = () => {
 
                     <div className="mb-3">
                         <label className="form-label">{t('status')}</label>
-                        <input type="text" className="form-control" name="status" value={book.status} onChange={handleChange}  required/>
+                        <select className="form-control" name="status" value={book.status} onChange={handleChange} required>
+                            <option value="reading">{t('reading')}</option>
+                            <option value="borrow">{t('borrow')}</option>
+                            <option value="sale">{t('sale')}</option>
+                        </select>
                     </div>
 
-                    <div className="mb-3">
-                        <label className="form-label">{t('price')}</label>
-                        <div className="input-group ">
-                            <span className="input-group-text">$</span>
-                            <input type="number" className="form-control" name="price" value={book.price} onChange={handleChange}  required/>
+                    {book.status !== 'reading' && (
+                        <div className="mb-3">
+                            <label className="form-label">{t('price')}</label>
+                            <div className="input-group ">
+                                <span className="input-group-text">$</span>
+                                <input 
+                                    type="number" 
+                                    className="form-control" 
+                                    name="price" 
+                                    value={book.price} 
+                                    onChange={handleChange}  
+                                    onKeyDown={(e) => handleKeyPress(e, 'price')}
+                                    onBlur={(e) => handleBlur(e, 'price')}
+                                    required={book.status !== 'reading'}
+                                    min="0"
+                                    step="0.01"
+                                />
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     <div className="mb-3">
                         <label className="form-label">{t('copies')}</label>
-                        <input type="number" className="form-control" name="copies" value={book.copies} onChange={handleChange} required />
+                        <input 
+                            type="number" 
+                            className="form-control" 
+                            name="copies" 
+                            value={book.copies} 
+                            onChange={handleChange} 
+                            onKeyDown={(e) => handleKeyPress(e, 'copies')}
+                            onBlur={(e) => handleBlur(e, 'copies')}
+                            required 
+                            min="1"
+                        />
                     </div>
 
                     <div className="mb-3">
                         <label className="form-label">{t('description')}</label>
-                        <textarea type="text" className="form-control" name="description" value={book.description} rows='3' onChange={handleChange} required />
-                    </div>
-
-                    <div className="mb-3">
-                        <label className="form-label">{t('coverImage')}</label>
-                        <input id="coverInput" type="file" className="form-control" name="cover" onChange={handleChange} required />
+                        <textarea className="form-control" name="description" value={book.description} rows='3' onChange={handleChange} required />
                     </div>
 
                     <button type="submit" className="btn btn-primary mt-5 add" >
