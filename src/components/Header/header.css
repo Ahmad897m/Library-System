@@ -1,0 +1,112 @@
+.search-container {
+    position: relative;
+}
+
+.search-results-dropdown {
+    max-height: 300px;
+    overflow-y: auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.search-result-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f1f3f4 !important;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.search-result-item:last-child {
+    border-bottom: none !important;
+}
+
+.search-result-item:hover {
+    background-color: #f8f9fa !important;
+}
+
+.search-result-item h6 {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+.search-result-item small {
+    font-size: 0.8rem;
+}
+
+.status-badge {
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.status-badge.available {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-badge.borrow {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.sale {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-badge.reading {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+/* تخصيص شريط التمرير */
+.search-results-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-results-dropdown::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.search-results-dropdown::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.search-results-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* تحسين التصميم للجوال */
+@media (max-width: 768px) {
+    .search-container {
+        max-width: 300px !important;
+    }
+    
+    .search-results-dropdown {
+        width: 100%;
+        left: 0 !important;
+        right: 0 !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .search-container {
+        max-width: 250px !important;
+    }
+    
+    .search-result-item {
+        padding: 10px 12px;
+    }
+    
+    .search-result-item h6 {
+        font-size: 0.9rem;
+    }
+    
+    .search-result-item small {
+        font-size: 0.75rem;
+    }
+}
