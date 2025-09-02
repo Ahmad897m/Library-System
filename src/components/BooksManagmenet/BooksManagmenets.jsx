@@ -1,36 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getBooks, updateBook, deleteBook } from "../../services/apiService";
 
 const BooksManagement = () => {
+// testing date
+
   const { t } = useTranslation();
 
 
-const [books, setBooks] = useState([]);
-const [loading, setLoading] = useState(true);
-const [error, setError] = useState(null);
+const mocBooks = Array.from({length: 100}, (_, i) => ({
+  id: i + 1,
+  title: `Book ${i + 1}`,
+  author: `Author ${i % 10}`,
+  releaseDate: `2025-05-${(i % 30) + 1}`,
+  category: `${t("sectionName")} ${Math.floor(i/10) + 1}`,
+  status: (i % 3 === 0) ? t("statusBorrowOnly") : ( i % 3 === 1 ? t("statusSellBorrow") : t("statusReadOnly") ),
+  price: `${i * 2}$`,
+  copies: i + 2
+}))
+
+// status
+
+const [books, setBooks] = useState(mocBooks);
 const [visibleBooksCount, setVisibleBooksCount] = useState(10);
 const [searchTerm, setSearchTerm] = useState("");
 const [selectedCategory, setSelectedCategory] = useState("All");
 const [editBook, setEditBook] = useState(null);
 const [filteredBooks, setFilteredBooks] = useState([]);
-
-// Fetch books from API when component mounts
-useEffect(() => {
-  const fetchBooks = async () => {
-    try {
-      const data = await getBooks();
-      setBooks(data);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error fetching books:", err);
-      setError("Failed to load books. Please try again later.");
-      setLoading(false);
-    }
-  };
-  
-  fetchBooks();
-}, []);
 
 
 useEffect (() => {

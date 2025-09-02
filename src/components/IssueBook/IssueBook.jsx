@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import './issueBook.css';
 import { useTranslation } from 'react-i18next';
-import { getBooks, updateBook, addCustomer } from "../../services/apiService";
 
-const IssueBook = ({ addCustomerLog }) => {
+const IssueBook = () => {
   const { t, i18n } = useTranslation();
   
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,60 +12,21 @@ const IssueBook = ({ addCustomerLog }) => {
   const [borrowPeriod, setBorrowPeriod] = useState("2");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showResults, setShowResults] = useState(false);
-  const [showCustomerPopup, setShowCustomerPopup] = useState(false);
 
-  // Fetch books from API when component mounts
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const data = await getBooks();
-        setBooks(data);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching books:", err);
-        setError("Failed to load books. Please try again later.");
-        setLoading(false);
-      }
-    };
-    
-    fetchBooks();
-  }, []);
+  const books = [
+    { id: 1, title: "Book A", section: "Science", author: "Author A", isBorrowable: true },
+    { id: 2, title: "Book B", section: "History", author: "Author B", isBorrowable: false },
+    { id: 3, title: "Book C", section: "Math", author: "Author C", isBorrowable: true },
+  ];
 
-  // Borrow prices
-  const borrowPrices = {
-    "2": 0.10, // 10%
-    "7": 0.20, // 20%
-    "15": 0.25 // 25%
-  };
-
-  // Search books
-  const searchBooks = () => {
-    if (!searchTerm.trim()) return [];
-    
-    return books.filter(
+  const handleSearch = () => {
+    const results = books.filter(
       (book) =>
-        book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.author?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.isbn?.includes(searchTerm)
+        book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.section.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.author.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  };
-
-  const results = searchBooks();
-
-  // Calculate borrow price
-  const calculateBorrowPrice = () => {
-    if (!selectedBook || !selectedBook.price) return 0;
-    const price = parseFloat(selectedBook.price);
-    const percentage = borrowPrices[borrowPeriod];
-    return (price * percentage).toFixed(2);
-  };
-
-  // Generate unique customer ID
-  const generateMemberId = () => {
-    return 'CUST-' + Math.floor(100000 + Math.random() * 900000);
+    return results;
   };
 
   // Handle borrowing
@@ -107,109 +67,23 @@ const IssueBook = ({ addCustomerLog }) => {
       // Calculate borrow dates and price
       const borrowDate = new Date();
       const returnDate = new Date();
-      returnDate.setDate(returnDate.getDate() + parseInt(borrowPeriod));
-      const borrowPrice = calculateBorrowPrice();
+      if (borrowType === "Borrow") returnDate.setDate(returnDate.getDate() + 7);
+      if (borrowType === "Sale") returnDate.setDate(returnDate.getDate() + 2);
 
-      // Prepare transaction data
-      const transactionData = {
-        id: Date.now().toString(),
-        customerId: customerId,
-        customerName: customerName,
-        customerPhone: customerPhone,
-        bookId: selectedBook.id,
-        bookTitle: selectedBook.title,
-        action: "Borrow",
-        borrowPeriod: borrowPeriod,
-        borrowDate: borrowDate.toISOString(),
-        returnDate: returnDate.toISOString(),
-        price: borrowPrice,
-        amountPaid: borrowPrice,
-        timestamp: new Date().toISOString(),
-        status: 'active',
-        returned: false
-      };
-
-      // Update book status and reduce copies
-      const updatedCopies = selectedBook.copies - 1;
-      
-      // Determine new status based on remaining copies
-      const newStatus = updatedCopies === 0 ? 'borrow_out' : 'borrow';
-      
-      const updatedBook = {
-        ...selectedBook,
-        copies: updatedCopies,
-        status: newStatus,
-        currentBorrower: customerName,
-        borrowDate: borrowDate.toISOString(),
-        returnDate: returnDate.toISOString(),
-        isBorrowed: true
-      };
-
-      // Remove unnecessary fields if value is null or undefined
-      Object.keys(updatedBook).forEach(key => {
-        if (updatedBook[key] === undefined || updatedBook[key] === null) {
-          delete updatedBook[key];
-        }
-      });
-
-      // Update book in API
-      await updateBook(selectedBook.id, updatedBook);
-      
-      // Update books list locally
-      setBooks(prevBooks => 
-        prevBooks.map(b => b.id === selectedBook.id ? updatedBook : b)
+      setMessage(
+        `${t("recordedMessage", {
+          type: t(borrowType.toLowerCase()),
+          title: selectedBook.title,
+          username: username
+        })}\n${t("expectedReturn", {
+          date: returnDate.toLocaleDateString(i18n.language)
+        })}`
       );
-
-      // Add to customer log if function exists
-      if (addCustomerLog) {
-        addCustomerLog({
-          name: customerName,
-          action: "Borrow",
-          bookTitle: selectedBook.title,
-          returnDate: returnDate.toISOString()
-        });
-      }
-
-      // Success message
-      setMessage(t("borrowSuccess", {
-        book: selectedBook.title,
-        customer: customerName,
-        price: borrowPrice
-      }));
-    } catch (error) {
-      console.error("Error during book borrowing:", error);
-      setError("Failed to process borrowing. Please try again.");
+      setError("");
     }
-
-    // Close popup and reset
-    setShowCustomerPopup(false);
-    setSelectedBook(null);
-    setCustomerName("");
-    setCustomerPhone("");
-    setError("");
-
-    setTimeout(() => setMessage(""), 4000);
   };
 
-  // Open customer data input popup when selecting a book
-  const handleBookSelect = (book) => {
-    // Check if copies = 0 and show immediate message
-    if (book.copies <= 0) {
-      setError("No copies available");
-      setShowCustomerPopup(false);
-      return;
-    }
-    
-    // Check book type - must be for borrowing only
-    if (book.status !== 'borrow') {
-      setError(t("cannotBorrow"));
-      return;
-    }
-    
-    setSelectedBook(book);
-    setShowCustomerPopup(true);
-    setError("");
-  };
+  const results = handleSearch();
 
   return (
     <div className="container py-4" dir={i18n.language === "ar" ? "rtl" : "ltr"}>
