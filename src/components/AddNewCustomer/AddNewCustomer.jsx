@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useAppDispatch } from '../../redux/hooks';
+import { addCustomer } from '../../redux/slices/customerSlice';
 import './addNewCustomer.css';
 
 const AddNewCustomer = () => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
 
   function generateMemberId() {
     return 'LIB-' + Math.floor(100000 + Math.random() * 900000);
@@ -32,9 +35,22 @@ const AddNewCustomer = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('New Customer:', formData);
+    
+    // إضافة العميل عبر Redux
+    dispatch(addCustomer(formData));
+    
     setSuccessMessage(true);
-    // يمكنك هنا استدعاء API أو تحديث الحالة في التطبيق
+    
+    // إعادة تعيين النموذج
+    setFormData({
+      fullName: '',
+      email: '',
+      phone: '',
+      address: '',
+      dateOfBirth: '',
+      memberId: generateMemberId(),
+      joinDate: getTodayDate(),
+    });
   };
 
   return (

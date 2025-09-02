@@ -1,78 +1,149 @@
 import React, { useEffect, useState } from "react";
 import './booksManagement.css'
 import { useTranslation } from "react-i18next";
+import { useAppSelector, useAppDispatch } from '../../redux/hooks';
+import { 
+  selectFilteredBooks, 
+  selectCategories, 
+  selectEditBook,
+  setFilters,
+  setEditBook,
+  updateBook,
+  deleteBook 
+} from '../../redux/slices/bookSlice';
+import './booksManagement.css'
 
 const BooksManagement = () => {
 // testing date
 
   const { t } = useTranslation();
-
-  // Remove mocBooks array as we'll fetch from API
-
-const mocBooks = Array.from({length: 100}, (_, i) => ({
-  id: i + 1,
-  title: `Book ${i + 1}`,
-  author: `Author ${i % 10}`,
-  releaseDate: `2025-05-${(i % 30) + 1}`,
-  category: `${t("sectionName")} ${Math.floor(i/10) + 1}`,
-  status: (i % 3 === 0) ? t("statusBorrowOnly") : ( i % 3 === 1 ? t("statusSellBorrow") : t("statusReadOnly") ),
-  price: `${i * 2}$`,
-  copies: i + 2
-}))
-
-// status
-
-const [books, setBooks] = useState(mocBooks);
-const [visibleBooksCount, setVisibleBooksCount] = useState(10);
-const [searchTerm, setSearchTerm] = useState("");
-const [selectedCategory, setSelectedCategory] = useState("All");
-const [editBook, setEditBook] = useState(null);
-const [filteredBooks, setFilteredBooks] = useState([]);
+  const dispatch = useAppDispatch();
+  
+  const books = useAppSelector(selectFilteredBooks);
+  const categories = useAppSelector(selectCategories);
+  const editBook = useAppSelector(selectEditBook);
+  
+  const [visibleBooksCount, setVisibleBooksCount] = useState(10);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
-    let filtered = books.filter(
-      (book) => 
-        book.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        book.author?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.releaseDate?.toLowerCase().includes(searchTerm) ||
-        book.category?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-
-    if(selectedCategory !== "All") {
-      filtered = filtered.filter((book) => book.category === selectedCategory)
-    }
-
-    setFilteredBooks(filtered);
-  }, [searchTerm, selectedCategory, books]);
-
+    dispatch(setFilters({ 
+      search: searchTerm,
+      category: selectedCategory 
+    }));
+  }, [searchTerm, selectedCategory, dispatch]);
 
   const handleEdit = (book) => {
-    setEditBook(book)
-  }
+    dispatch(setEditBook(book));
+  };
 
-  //Update book
-  const handleUpdate = async () => {
-    try {
-      await updateBook(editBook.id, editBook);
-      const updatedBooks = books.map((b) => (b.id === editBook.id ? editBook : b));
-      setBooks(updatedBooks);
-      setEditBook(null);
-    } catch (err) {
-      console.error("Error updating book:", err);
-      // You could add error state and display to user here
+  const handleUpdate = () => {
+    if (editBook) {
+      dispatch(updateBook({
+        id: editBook.id,
+        updates: editBook
+      }));
+      dispatch(setEditBook(null));
     }
   };
 
-  //delete Book
-  const handleDelete = async (id) => {
-    try {
-      await deleteBook(id);
-      const updatedBooks = books.filter((book) => book.id !== id);
-      setBooks(updatedBooks);
-      setEditBook(null);
-    } catch (err) {
-      console.error("Error deleting book:", err);
-      // You could add error state and display to user here
+  const handleDelete = (id) => {
+    if (window.confirm(t('confirmDelete'))) {
+      dispatch(deleteBook(id));
+    }
+  };
+
+  const handleEditChange = (field, value) => {
+    if (editBook) {
+      const updatedBook = { ...editBook, [field]: value };
+      
+      // إذا كان الحقل الذي يتم تعديله هو عدد النسخ
+      if (field === 'copies') {
+        const copiesCount = parseInt(value) || 0;
+        
+        // منع القيم السالبة في عدد النسخ
+        if (copiesCount < 0) return;
+        
+        // تغيير الحالة تلقائياً بناءً على عدد النسخ والنوع
+        if (copiesCount === 0) {
+          // إذا أصبح عدد النسخ 0، نغير الحالة إلى النوع المناسب
+          if (updatedBook.status === 'sale') {
+            updatedBook.status = 'sold_out';
+          } else if (updatedBook.status === 'borrow') {
+            updatedBook.status = 'borrow_out';
+          } else if (updatedBook.status === 'reading') {
+            updatedBook.status = 'reading_out';
+          }
+          // إذا كانت الحالة بالفعل من النوع _out، نتركها كما هي
+        } else if (copiesCount > 0) {
+          // إذا أصبح عدد النسخ أكبر من 0، نعيد الحالة إلى النوع الأساسي
+          if (updatedBook.status === 'sold_out') {
+            updatedBook.status = 'sale';
+          } else if (updatedBook.status === 'borrow_out') {
+            updatedBook.status = 'borrow';
+          } else if (updatedBook.status === 'reading_out') {
+            updatedBook.status = 'reading';
+          }
+        }
+      }
+      
+      // منع القيم السالبة في السعر
+      if (field === 'price') {
+        const priceValue = parseFloat(value) || 0;
+        if (priceValue < 0) return;
+        updatedBook[field] = priceValue;
+      }
+      
+      dispatch(setEditBook(updatedBook));
+    }
+  };
+
+  // دالة للتحقق من المدخلات ومنع القيم السالبة
+  const handleInputValidation = (e, field) => {
+    // السماح فقط بالأرقام والنقطة (للسعر) ومفاتيح التحكم
+    if (!/[\d.]/.test(e.key) && 
+        e.key !== 'Backspace' && 
+        e.key !== 'Delete' && 
+        e.key !== 'ArrowLeft' && 
+        e.key !== 'ArrowRight' && 
+        e.key !== 'Tab') {
+      e.preventDefault();
+    }
+    
+    // منع إدخال أكثر من نقطة واحدة للسعر
+    if (field === 'price' && e.key === '.' && e.target.value.includes('.')) {
+      e.preventDefault();
+    }
+  };
+
+  // دالة للتحقق من القيم بعد الإدخال
+  const handleBlur = (field, value) => {
+    if (field === 'copies') {
+      const copiesCount = parseInt(value) || 0;
+      if (copiesCount < 0) {
+        handleEditChange(field, 0);
+      }
+    }
+    
+    if (field === 'price') {
+      const priceValue = parseFloat(value) || 0;
+      if (priceValue < 0) {
+        handleEditChange(field, 0);
+      }
+    }
+  };
+
+  // دالة للحصول على النص المعروض للحالة
+  const getStatusDisplayText = (status) => {
+    switch (status) {
+      case 'sale': return t('sale');
+      case 'sold_out': return t('sold_out');
+      case 'borrow': return t('borrow');
+      case 'borrow_out': return t('borrow_out');
+      case 'reading': return t('reading');
+      case 'reading_out': return t('reading_out');
+      default: return status;
     }
   };
 
@@ -80,6 +151,7 @@ const [filteredBooks, setFilteredBooks] = useState([]);
     <>
       <div className="books-management-container">
         <h2>{t("booksManagementTitle")}</h2>
+        
         <div className="search-filter">
           <input 
             type="text" 
@@ -88,27 +160,24 @@ const [filteredBooks, setFilteredBooks] = useState([]);
             onChange={(e) => setSearchTerm(e.target.value)}
           />
 
-          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} name="" id="">
+          <select 
+            value={selectedCategory}  
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
             <option value="All">{t("allSections")}</option>
-            {[...new Set(books.map((b) => b.category))].map((cat, i) =>( 
+            {categories.map((cat, i) => ( 
               <option key={i} value={cat}>{cat}</option>
             ))}
           </select>
         </div>
-
-        {loading ? (
-          <p>{t("loading")}</p>
-        ) : error ? (
-          <p className="error-message">{error}</p>
-        ) : filteredBooks.length === 0 ? (
+        
+        {books.length === 0 ? (
           <p className="no-books-message">{t("noBooksMessage")}</p>
         ) : (
           <>
             <table className="books-table">
-              // In your table, add a column for the cover image
               <thead>
                 <tr>
-                  <th>{t("tableCover")}</th>
                   <th>{t("tableTitle")}</th>
                   <th>{t("tableAuthor")}</th>
                   <th>{t("tableReleaseDate")}</th>
@@ -120,82 +189,103 @@ const [filteredBooks, setFilteredBooks] = useState([]);
                 </tr>
               </thead>
               <tbody>
-                {filteredBooks.slice(0, visibleBooksCount).map((book) => (
+                {books.slice(0, visibleBooksCount).map((book) => (
                   <tr key={book.id}>
-                    <td>
-                      {book.cover ? (
-                        <img 
-                          src={`${process.env.PUBLIC_URL}/images/${book.cover}`} 
-                          alt={book.title}
-                          style={{ width: '50px', height: 'auto' }} 
-                        />
-                      ) : (
-                        <div className="no-cover">{t("noCover")}</div>
-                      )}
-                    </td>
                     <td>{book.title}</td>
                     <td>{book.author}</td>
-                    <td>{book.releaseDate}</td>
+                    <td>{book.publishedDate || book.releaseDate}</td>
                     <td>{book.category}</td>
-                    <td>{book.status}</td>
-                    <td className="text-center">{book.price}</td>
+                    <td>{getStatusDisplayText(book.status)}</td>
+                    <td className="text-center">${book.price}</td>
                     <td className="text-center">{book.copies}</td>
                     <td>
-                      <button className="edit-button" onClick={() => handleEdit(book)}>{t("editButton")}</button>
+                      <button className="edit-button" onClick={() => handleEdit(book)}>
+                        {t("editButton")}
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
-            </table> 
+            </table>
 
-            {visibleBooksCount < filteredBooks.length && (
+            {visibleBooksCount < books.length && (
               <button 
                 className="load-more-button"
-                onClick={() => setVisibleBooksCount(prev => prev + 10)}>{t("loadMore")}</button>
+                onClick={() => setVisibleBooksCount(prev => prev + 10)}
+              >
+                {t("loadMore")}
+              </button>
             )}
           </>
-        )}   
+        )}
 
         {editBook && (
           <div className="edit-popup">
             <h3>{t("editPopupTitle")}</h3>
-            <input type="text" 
+            <input 
+              type="text" 
               value={editBook.title}
-              onChange={(e) => setEditBook({...editBook, title: e.target.value})}
+              onChange={(e) => handleEditChange('title', e.target.value)}
               placeholder={t("placeholderTitle")}
             />
-            <input type="text" 
-              value={editBook.releaseDate}
-              onChange={(e) => setEditBook({...editBook, releaseDate: e.target.value})}
+            <input 
+              type="date" 
+              value={editBook.publishedDate || editBook.releaseDate}
+              onChange={(e) => handleEditChange('publishedDate', e.target.value)}
               placeholder={t('placeholderReleaseDate')}
             />
-            <input type="text" 
+            <input 
+              type="text" 
               value={editBook.category}
-              onChange={(e) => setEditBook({...editBook, category: e.target.value})}
+              onChange={(e) => handleEditChange('category', e.target.value)}
               placeholder={t("placeholderCategory")}
             />
-            <input type="number" 
+            <input 
+              type="number" 
+              min="0"
+              step="0.01"
               value={editBook.price}
-              onChange={(e) => setEditBook({...editBook, price: e.target.value })}
+              onChange={(e) => handleEditChange('price', e.target.value)}
+              onKeyDown={(e) => handleInputValidation(e, 'price')}
+              onBlur={(e) => handleBlur('price', e.target.value)}
               placeholder={t("placeholderPrice")}
+            />
+            <input 
+              type="number" 
+              min="0"
+              value={editBook.copies}
+              onChange={(e) => handleEditChange('copies', e.target.value)}
+              onKeyDown={(e) => handleInputValidation(e, 'copies')}
+              onBlur={(e) => handleBlur('copies', e.target.value)}
+              placeholder={t("placeholderCopies")}
             />
             <select 
               value={editBook.status}
-              onChange={(e) => setEditBook({...editBook, status: e.target.value})}>
-              <option value="Borrow only">{t('statusBorrowOnly')}</option>
-              <option value="Sell & Borrow">{t('statusSellBorrow')}</option>
-              <option value="Read Only">{t('statusReadOnly')}</option>
+              onChange={(e) => handleEditChange('status', e.target.value)}
+            >
+              <option value="sale">{t('sale')}</option>
+              <option value="sold_out">{t('sold_out')}</option>
+              <option value="borrow">{t('borrow')}</option>
+              <option value="borrow_out">{t('borrow_out')}</option>
+              <option value="reading">{t('reading')}</option>
+              <option value="reading_out">{t('reading_out')}</option>
             </select>
             <div className="edit-buttons">
-              <button className="save-button" onClick={handleUpdate}>{t('saveButton')}</button>
-              <button className="cancel-button" onClick={() => setEditBook(null)}>{t('cancelButton')}</button>
-              <button type="button" className="btn btn-danger" onClick={() => handleDelete(editBook.id)}>{t('deleteButton')}</button>
+              <button className="save-button" onClick={handleUpdate}>
+                {t('saveButton')}
+              </button>
+              <button className="cancel-button" onClick={() => dispatch(setEditBook(null))}>
+                {t('cancelButton')}
+              </button>
+              <button className="btn btn-danger" onClick={() => handleDelete(editBook.id)}>
+                {t('deleteButton')}
+              </button>
             </div>
           </div>
         )}
       </div>
     </>
-  )
-}
+  );
+};
 
 export default BooksManagement;

@@ -1,55 +1,184 @@
 import React, { useState } from "react";
-import './issueBook.css';
 import { useTranslation } from 'react-i18next';
+import { useAppSelector, useAppDispatch } from '../../redux/hooks';
+import { addTransaction } from '../../redux/slices/transactionsSlice';
+import { updateBook } from '../../redux/slices/bookSlice';
+import { addCustomer } from '../../redux/slices/customerSlice';
+import { selectBooks } from '../../redux/slices/bookSlice';
+import './issueBook.css';
 
 const IssueBook = () => {
   const { t, i18n } = useTranslation();
+  const dispatch = useAppDispatch();
+  
+  const books = useAppSelector(selectBooks);
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBook, setSelectedBook] = useState(null);
   const [borrowType, setBorrowType] = useState("Borrow");
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [showResults, setShowResults] = useState(false);
+  const [showCustomerPopup, setShowCustomerPopup] = useState(false);
 
-  const books = [
-    { id: 1, title: "Book A", section: "Science", author: "Author A", isBorrowable: true },
-    { id: 2, title: "Book B", section: "History", author: "Author B", isBorrowable: false },
-    { id: 3, title: "Book C", section: "Math", author: "Author C", isBorrowable: true },
-  ];
+  // أسعار الإعارة
+  const borrowPrices = {
+    "2": 0.10, // 10%
+    "7": 0.20, // 20%
+    "15": 0.25 // 25%
+  };
 
-  const handleSearch = () => {
-    const results = books.filter(
+  // البحث في الكتب
+  const searchBooks = () => {
+    if (!searchTerm.trim()) return [];
+    
+    return books.filter(
       (book) =>
-        book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.section.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.author.toLowerCase().includes(searchTerm.toLowerCase())
+        book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.author?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.isbn?.includes(searchTerm)
     );
-    return results;
   };
 
-  const handleTransaction = () => {
-    if (selectedBook && !selectedBook.isBorrowable && borrowType === "Borrow") {
-      setError(t("cannotBorrow"));
-      setMessage("");
-    } else {
-      const returnDate = new Date();
-      if (borrowType === "Borrow") returnDate.setDate(returnDate.getDate() + 7);
-      if (borrowType === "Sale") returnDate.setDate(returnDate.getDate() + 2);
+  const results = searchBooks();
 
-      setMessage(
-        `${t("recordedMessage", {
-          type: t(borrowType.toLowerCase()),
-          title: selectedBook.title,
-          username: username
-        })}\n${t("expectedReturn", {
-          date: returnDate.toLocaleDateString(i18n.language)
-        })}`
-      );
-      setError("");
+  // حساب سعر الإعارة
+  const calculateBorrowPrice = () => {
+    if (!selectedBook || !selectedBook.price) return 0;
+    const price = parseFloat(selectedBook.price);
+    const percentage = borrowPrices[borrowPeriod];
+    return (price * percentage).toFixed(2);
+  };
+
+  // إنشاء معرف عميل فريد
+  const generateMemberId = () => {
+    return 'CUST-' + Math.floor(100000 + Math.random() * 900000);
+  };
+
+  // معالجة الإعارة
+  const handleBorrow = () => {
+    if (!selectedBook || !customerName.trim()) {
+      setError(t("fillRequiredFields"));
+      return;
     }
+
+    // التحقق من نوع الكتاب - يجب أن يكون للإعارة فقط
+    if (selectedBook.status !== 'borrow') {
+      setError(t("cannotBorrow"));
+      return;
+    }
+
+    // التحقق إذا كانت النسخ = 0 وإظهار رسالة باللغة الإنجليزية
+    if (selectedBook.copies <= 0) {
+      setError("No copies available");
+      return;
+    }
+
+    // إنشاء عميل جديد
+    const customerId = generateMemberId();
+    const customerData = {
+      id: customerId,
+      fullName: customerName,
+      phone: customerPhone,
+      memberId: customerId,
+      joinDate: new Date().toISOString().split('T')[0],
+      activeLoans: 1,
+      totalLoans: 1
+    };
+    dispatch(addCustomer(customerData));
+
+    // حساب تواريخ الإعارة والسعر
+    const borrowDate = new Date();
+    const returnDate = new Date();
+    returnDate.setDate(returnDate.getDate() + parseInt(borrowPeriod));
+    const borrowPrice = calculateBorrowPrice();
+
+    // إعداد بيانات المعاملة
+    const transactionData = {
+      id: Date.now().toString(),
+      customerId: customerId,
+      customerName: customerName,
+      customerPhone: customerPhone,
+      bookId: selectedBook.id,
+      bookTitle: selectedBook.title,
+      action: "Borrow",
+      borrowPeriod: borrowPeriod,
+      borrowDate: borrowDate.toISOString(),
+      returnDate: returnDate.toISOString(),
+      price: borrowPrice,
+      amountPaid: borrowPrice,
+      timestamp: new Date().toISOString(),
+      status: 'active',
+      returned: false
+    };
+
+    // إضافة المعاملة
+    dispatch(addTransaction(transactionData));
+
+    // تحديث حالة الكتاب وتقليل عدد النسخ
+    const updatedCopies = selectedBook.copies - 1;
+    
+    // تحديد الحالة الجديدة بناءً على عدد النسخ المتبقية
+    const newStatus = updatedCopies === 0 ? 'borrow_out' : 'borrow';
+    
+    const updates = {
+      copies: updatedCopies,
+      status: newStatus,
+      currentBorrower: customerName,
+      borrowDate: borrowDate.toISOString(),
+      returnDate: returnDate.toISOString(),
+      isBorrowed: true
+    };
+
+    // إزالة الحقول غير الضرورية إذا كانت القيمة null أو undefined
+    Object.keys(updates).forEach(key => {
+      if (updates[key] === undefined || updates[key] === null) {
+        delete updates[key];
+      }
+    });
+
+    dispatch(updateBook({
+      id: selectedBook.id,
+      updates: updates
+    }));
+
+    // رسالة النجاح
+    setMessage(t("borrowSuccess", {
+      book: selectedBook.title,
+      customer: customerName,
+      price: borrowPrice
+    }));
+
+    // إغلاق البوب أب وإعادة التعيين
+    setShowCustomerPopup(false);
+    setSelectedBook(null);
+    setCustomerName("");
+    setCustomerPhone("");
+    setError("");
+
+    setTimeout(() => setMessage(""), 4000);
   };
 
-  const results = handleSearch();
+  // فتح بوب أب إدخال البيانات عند اختيار كتاب
+  const handleBookSelect = (book) => {
+    // التحقق إذا كانت النسخ = 0 وإظهار رسالة فورية
+    if (book.copies <= 0) {
+      setError("No copies available");
+      setShowCustomerPopup(false);
+      return;
+    }
+    
+    // التحقق من نوع الكتاب - يجب أن يكون للإعارة فقط
+    if (book.status !== 'borrow') {
+      setError(t("cannotBorrow"));
+      return;
+    }
+    
+    setSelectedBook(book);
+    setShowCustomerPopup(true);
+    setError("");
+  };
 
   return (
     <div className="container py-4" dir={i18n.language === "ar" ? "rtl" : "ltr"}>

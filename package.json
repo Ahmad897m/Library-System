@@ -46,9 +46,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "concurrently": "^9.2.1",
-    "json-server": "^1.0.0-beta.3"
   }
 }

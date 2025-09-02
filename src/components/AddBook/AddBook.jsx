@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useAppDispatch } from '../../redux/hooks';
+import { addBook } from '../../redux/slices/bookSlice';
 import './addBook.css'
 
 const AddBook = () => {
     const { t } = useTranslation();
+    const dispatch = useAppDispatch();
 
     const [book, setBook] = useState({
         title: '',
@@ -34,26 +37,77 @@ const AddBook = () => {
         }));
     };
 
+    // دالة للتحقق من المدخلات ومنع القيم السالبة أثناء الكتابة
+    const handleKeyPress = (e, fieldName) => {
+        // السماح فقط بالأرقام والنقطة (للسعر) ومفاتيح التحكم
+        if (fieldName === 'price' && e.key === '.' && e.target.value.includes('.')) {
+            e.preventDefault(); // منع إدخال أكثر من نقطة واحدة
+            return;
+        }
+        
+        if (!/[\d.]/.test(e.key) && 
+            e.key !== 'Backspace' && 
+            e.key !== 'Delete' && 
+            e.key !== 'ArrowLeft' && 
+            e.key !== 'ArrowRight' && 
+            e.key !== 'Tab') {
+            e.preventDefault();
+        }
+    };
+
+    // دالة للتحقق من القيم بعد الإدخال
+    const handleBlur = (e, fieldName) => {
+        const value = e.target.value;
+        
+        if ((fieldName === 'copies' || fieldName === 'price') && value !== '') {
+            const numericValue = parseFloat(value);
+            
+            if (numericValue < 0) {
+                setBook((prev) => ({
+                    ...prev,
+                    [fieldName]: fieldName === 'copies' ? '1' : '0'
+                }));
+            }
+            
+            // التأكد من أن عدد النسخ لا يقل عن 1
+            if (fieldName === 'copies' && numericValue < 1) {
+                setBook((prev) => ({
+                    ...prev,
+                    copies: '1'
+                }));
+            }
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("Book data Submitted", book);
+        
+        // تحويل القيم الرقمية إلى أرقام مع التحقق من القيم السالبة
+        const bookToAdd = {
+            ...book,
+            price: book.price ? Math.max(0, parseFloat(book.price)) : 0,
+            copies: book.copies ? Math.max(1, parseInt(book.copies)) : 1,
+            // إذا كان للقراءة فقط، نجعل السعر 0
+            price: book.status === 'reading' ? 0 : (book.price ? Math.max(0, parseFloat(book.price)) : 0)
+        };
+        
+        // إضافة الكتاب عبر Redux
+        dispatch(addBook(bookToAdd));
+        
         setSuccessMessage(true);
-
         setTimeout(() => setSuccessMessage(false), 4000);
 
+        // مسح الحقول
         setBook({
             title: '',
             author: '',
             publishedDate: '',
             category: '',
-            status: '',
+            status: 'reading',
             price: '',
             copies: '',
             description: '',
-            cover: null,
         });
-
-        document.getElementById("coverInput").value = '';
     };
 
     return (
