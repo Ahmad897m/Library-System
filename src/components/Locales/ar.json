@@ -76,18 +76,8 @@
   "borrow": "إعارة",
   "sale": "بيع",
   "read": "قراءة",
-  "copiesRemaining": "النسخ المتبقية",
-  "borrowSuccess": "تمت إعارة '{book}' للزبون '{customer}' بنجاح! المبلغ: ${price}",
-  "noCopiesAvailable": "لا توجد نسخ متاحة للإعارة",
 
 
-
-  "bookType": "نوع الكتاب",
-  "selectBookType": "اختر نوع الكتاب",
-  "forBorrowOnly": "للإعارة فقط",
-  "forSaleOnly": "للبيع فقط",
-  "forBorrowAndSale": "للإعارة والبيع",
-  "forReadingOnly": "للقراءة فقط",
   
   "readingRoom": "قاعة القراءة",
   "searchPlaceholder": "ابحث عن كتاب...!",
@@ -159,151 +149,8 @@
   "light": "فاتح",
   "dark": "داكن"
 
-},
+}
 
 
-
-
-  "cannotBorrow": "هذا الكتاب غير متاح للإعارة",
-  "borrowSuccess": "تم إعارة الكتاب '{book}' للعميل '{customer}' بسعر ${price}",
-  "fillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
-  "noCopiesAvailable": "لا توجد نسخ متاحة لهذا الكتاب",
-  "forBorrow": "للإعارة",
-  "forSale": "للبيع", 
-  "forReading": "للقراءة فقط",
-  "currentlyBorrowedBy": "معار حالياً لـ",
-
-
- 
-  "borrowIncome": "دخل الإعارة",
-  "totalIncome": "إجمالي الدخل",
-  "from": "من",
-  "transactions": "عملية",
-  "salesAndBorrows": "مبيعات + إعارات",
-  "currentlyBorrowed": "معار حالياً",
-  "additionalStatistics": "إحصائيات إضافية",
-  "totalBorrowTransactions": "إجمالي عمليات الإعارة",
-  "activeBorrows": "الإعارات النشطة",
-  "averageBorrowPrice": "متوسط سعر الإعارة",
-  
-  "readingRoom": "غرفة القراءة",
-  "salesSection": "قسم المبيعات",
-  "cannotRead": "هذا الكتاب غير متاح للقراءة الداخلية",
-  "cannotSell": "هذا الكتاب غير متاح للبيع",
-  "readingSuccess": "بدأت جلسة القراءة للكتاب '{book}' للعميل '{customer}'",
-  "saleSuccess": "تم بيع الكتاب '{book}' للعميل '{customer}' بسعر ${price}",
-  "forReadingOnly": "للقراءة فقط",
-  "forSaleOnly": "للبيع فقط",
-  "readingSummary": "ملخص الجلسة",
-  "saleSummary": "ملخص البيع",
-  "freeReading": "قراءة مجانية",
-  "noTimeLimit": "لا يوجد حد زمني",
-  "comfortableEnvironment": "بيئة مريحة للقراءة",
-  "salePrice": "سعر البيع",
-  "enterSalePrice": "أدخل سعر البيع",
-  "copiesAfterSale": "النسخ المتبقية بعد البيع",
-  "amountToReceive": "المبلغ المستلم",
-  "totalReadSessions": "إجمالي جلسات القراءة",
-  "totalBooksSold": "إجمالي الكتب المباعة",
-  "serviceType": "نوع الخدمة",
-  
-
-  
-  "readingRoom": "غرفة القراءة",
-  "cannotRead": "هذا الكتاب غير متاح للقراءة الداخلية",
-  "readingSuccess": "بدأت جلسة القراءة للكتاب '{book}' للعميل '{customer}'",
-  "forReadingOnly": "للقراءة فقط",
-  "readingSummary": "ملخص الجلسة",
-  "freeReading": "قراءة مجانية",
-  "noTimeLimit": "لا يوجد حد زمني",
-  "comfortableEnvironment": "بيئة مريحة للقراءة",
-  "noChargesApply": "لا توجد رسوم تطبق",
-  "totalReadSessions": "إجمالي جلسات القراءة",
-  "availableReadingBooks": "الكتب المتاحة للقراءة",
-  "readingSessionsToday": "جلسات القراءة اليوم",
-  "serviceType": "نوع الخدمة",
-
-  
-  "customersManagement": "إدارة العملاء",
-  "activeLoansManagement": "إدارة الإعارات النشطة",
-  "transactionsHistory": "سجل المعاملات",
-  "totalTransactions": "إجمالي المعاملات",
-  "activeLoans": "الإعارات النشطة",
-  "expiredLoans": "الإعارات المنتهية",
-  "totalPurchases": "إجمالي المشتريات",
-  "borrowDate": "تاريخ الإعارة",
-  "returnDate": "تاريخ الإرجاع",
-  "period": "المدة",
-  "days": "أيام",
-  "remaining": "متبقي",
-  "returning": "جاري الإرجاع",
-  "returnBook": "إرجاع الكتاب",
-  "returned": "تم الإرجاع",
-  "noRecords": "لا توجد سجلات",
-
-
-
-
-
-
-  
-  "readingRoom": "غرفة القراءة",
-  "cannotRead": "هذا الكتاب غير متاح للقراءة الداخلية",
-  "readingSuccess": "بدأت جلسة القراءة للكتاب '{book}' للعميل '{customer}'",
-  "forReadingOnly": "للقراءة فقط",
-  "readingSummary": "ملخص الجلسة",
-  "freeReading": "قراءة مجانية",
-  "noTimeLimit": "لا يوجد حد زمني",
-  "comfortableEnvironment": "بيئة مريحة للقراءة",
-  "noChargesApply": "لا توجد رسوم تطبق",
-  "totalReadSessions": "إجمالي جلسات القراءة",
-  "availableReadingBooks": "الكتب المتاحة للقراءة",
-  "readingSessionsToday": "جلسات القراءة اليوم",
-  "totalReaders": "إجمالي القراء",
-  "readingInstructions": "تعليمات الاستخدام",
-  "instruction1": "الكتب للقراءة داخل المكتبة فقط",
-  "instruction2": "يرجى الحفاظ على الهدوء",
-  "instruction3": "عدم إخراج الكتب خارج المكتبة",
-  "instruction4": "إرجاع الكتاب إلى مكانه بعد الانتهاء",
-  "instruction5": "الاحتفاظ بالمقعد نظيفاً",
-  "description": "الوصف",
-
-
-  
-  "startReadingSession": "بدء جلسة القراءة",
-  "readingStarted": "بدأت جلسة القراءة للكتاب '{book}' للقارئ '{customer}'",
-  "readingCompleted": "اكتملت جلسة القراءة للكتاب '{book}' للقارئ '{customer}'",
-  "copiesAfterReading": "النسخ المتبقية أثناء القراءة",
-  "returnBook": "إرجاع الكتاب",
-  "reader": "القارئ",
-  "startTime": "وقت البدء",
-  "copiesAfterReturn": "النسخ بعد الإرجاع",
-  "sessionSummary": "ملخص الجلسة",
-  "bookReturnedSuccess": "تم إرجاع الكتاب بنجاح",
-  "copiesRestored": "تم استعادة عدد النسخ",
-  "confirmReturn": "تأكيد الإرجاع",
-
-
-  
-  "searchBooks": "ابحث عن الكتب...",
-  "by": "بواسطة",
-  "category": "التصنيف",
-  "copies": "النسخ",
-  "viewAllResults": "عرض جميع النتائج",
-  "available": "متاح",
-  "borrow": "للإعارة",
-  "sale": "للبيع",
-  "reading": "للقراءة",
-
-
-
-
-  "changingCopiesWillAutoUpdateStatus": "تغيير عدد النسخ سيحدث الحالة تلقائياً إلى 'للبيع'",
-  "soldOut": "مباع بالكامل",
-
-
-  
-  "completelySold": "مباع بالكامل",
-  "manageInBooksManagement": "يمكن إدارته في قسم إدارة الكتب"
 
 }

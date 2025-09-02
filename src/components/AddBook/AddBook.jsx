@@ -10,10 +10,11 @@ const AddBook = () => {
         author: '',
         publishedDate: '',
         category: '',
-        status: 'reading', // قيمة افتراضية
-        price: '',
+        status: '',
+        price:'',
         copies: '',
         description: '',
+        cover: null,
     });
 
     const [successMessage, setSuccessMessage] = useState(false);
@@ -29,7 +30,7 @@ const AddBook = () => {
 
         setBook((prev) => ({
             ...prev,
-            [name]: value,
+            [name]: files ? files[0] : value,
         }));
     };
 
@@ -89,11 +90,7 @@ const AddBook = () => {
 
                     <div className="mb-3">
                         <label className="form-label">{t('status')}</label>
-                        <select className="form-control" name="status" value={book.status} onChange={handleChange} required>
-                            <option value="reading">{t('reading')}</option>
-                            <option value="borrow">{t('borrow')}</option>
-                            <option value="sale">{t('sale')}</option>
-                        </select>
+                        <input type="text" className="form-control" name="status" value={book.status} onChange={handleChange}  required/>
                     </div>
 
                     {book.status !== 'reading' && (
@@ -115,7 +112,7 @@ const AddBook = () => {
                                 />
                             </div>
                         </div>
-                    )}
+                    </div>
 
                     <div className="mb-3">
                         <label className="form-label">{t('copies')}</label>
@@ -134,7 +131,12 @@ const AddBook = () => {
 
                     <div className="mb-3">
                         <label className="form-label">{t('description')}</label>
-                        <textarea className="form-control" name="description" value={book.description} rows='3' onChange={handleChange} required />
+                        <textarea type="text" className="form-control" name="description" value={book.description} rows='3' onChange={handleChange} required />
+                    </div>
+
+                    <div className="mb-3">
+                        <label className="form-label">{t('coverImage')}</label>
+                        <input id="coverInput" type="file" className="form-control" name="cover" onChange={handleChange} required />
                     </div>
 
                     <button type="submit" className="btn btn-primary mt-5 add" >

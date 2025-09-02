@@ -41,11 +41,11 @@ const Sidebar = () => {
             </NavLink>
           </li>
 
-          {/* <li className="nav-item mb-2">
+          <li className="nav-item mb-2">
             <NavLink to='/AddNewCustomer' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}>
               <FaUsers /> {t('sidebar.addNewCustomer')}
             </NavLink>
-          </li> */}
+          </li>
 
           <li className="nav-item mb-2">
             <NavLink to='/Issue-Return' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}>

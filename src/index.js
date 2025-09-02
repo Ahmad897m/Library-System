@@ -1,19 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { store } from './redux/store'; // تأكد من أن المسار صحيح
+import { BrowserRouter, HashRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './i18n'; // This must be at the top before App runs
 import App from './App';
+import './i18n'; // This must be at the top before App runs
+
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </Provider>
-  </React.StrictMode>
+    <BrowserRouter>
+    <App />
+    </BrowserRouter>
 );

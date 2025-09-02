@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import './booksManagement.css'
 import { useTranslation } from "react-i18next";
 
 const BooksManagement = () => {
@@ -6,6 +7,7 @@ const BooksManagement = () => {
 
   const { t } = useTranslation();
 
+  // Remove mocBooks array as we'll fetch from API
 
 const mocBooks = Array.from({length: 100}, (_, i) => ({
   id: i + 1,
@@ -27,56 +29,64 @@ const [selectedCategory, setSelectedCategory] = useState("All");
 const [editBook, setEditBook] = useState(null);
 const [filteredBooks, setFilteredBooks] = useState([]);
 
+  useEffect(() => {
+    let filtered = books.filter(
+      (book) => 
+        book.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        book.author?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.releaseDate?.toLowerCase().includes(searchTerm) ||
+        book.category?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
 
-useEffect (() => {
-  let filtered = books.filter(
-    (book) => 
-      book.title.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase()) || 
-      book.author.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
-      book.releaseDate.toLocaleLowerCase().includes(searchTerm) ||
-      book.category.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
-)
+    if(selectedCategory !== "All") {
+      filtered = filtered.filter((book) => book.category === selectedCategory)
+    }
 
-      if(selectedCategory !== "All") {
-        filtered = filtered.filter((book) => book.category === selectedCategory)
-      }
-
-      setFilteredBooks(filtered);
-
-}, [searchTerm, selectedCategory, books]);
+    setFilteredBooks(filtered);
+  }, [searchTerm, selectedCategory, books]);
 
 
-const handleEdit = (book) => {
-  setEditBook(book)
-}
-//Update book
-const handleUpdate = () => {
-  const updatedBooks = books.map((b) => (b.id === editBook.id ? editBook : b));
-  setBooks(updatedBooks);
-  setEditBook(null);
-  // setShowForm(false); 
-};
+  const handleEdit = (book) => {
+    setEditBook(book)
+  }
 
-//delete Book
-const handleDelete = (id) => {
-  const updatedBooks = books.filter((book) => book.id !== id);
-  setBooks(updatedBooks);
-  setEditBook(null);
-};
+  //Update book
+  const handleUpdate = async () => {
+    try {
+      await updateBook(editBook.id, editBook);
+      const updatedBooks = books.map((b) => (b.id === editBook.id ? editBook : b));
+      setBooks(updatedBooks);
+      setEditBook(null);
+    } catch (err) {
+      console.error("Error updating book:", err);
+      // You could add error state and display to user here
+    }
+  };
 
+  //delete Book
+  const handleDelete = async (id) => {
+    try {
+      await deleteBook(id);
+      const updatedBooks = books.filter((book) => book.id !== id);
+      setBooks(updatedBooks);
+      setEditBook(null);
+    } catch (err) {
+      console.error("Error deleting book:", err);
+      // You could add error state and display to user here
+    }
+  };
 
-
-    return (
-        <>
-            <div className="books-management-container">
-                <h2>{t("booksManagementTitle")}</h2>
-                <div className="search-filter">
-                  <input 
-                  type="text" 
-                  placeholder={t("searchPlaceholder")}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+  return (
+    <>
+      <div className="books-management-container">
+        <h2>{t("booksManagementTitle")}</h2>
+        <div className="search-filter">
+          <input 
+            type="text" 
+            placeholder={t("searchPlaceholder")}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
 
           <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} name="" id="">
             <option value="All">{t("allSections")}</option>
@@ -138,56 +148,54 @@ const handleDelete = (id) => {
               </tbody>
             </table> 
 
-                {visibleBooksCount < filteredBooks.length && (
-                  <button 
-                  className="load-more-button"
-                  onClick={() => setVisibleBooksCount(prev => prev + 10)}>{t("loadMore")}</button>
-             )}
-             </>
-             )}   
+            {visibleBooksCount < filteredBooks.length && (
+              <button 
+                className="load-more-button"
+                onClick={() => setVisibleBooksCount(prev => prev + 10)}>{t("loadMore")}</button>
+            )}
+          </>
+        )}   
 
-                {editBook && (
-                  <div className="edit-popup">
-                    <h3>{t("editPopupTitle")}</h3>
-                    <input type="text" 
-                    value={editBook.title}
-                    onChange={(e) => setEditBook({...editBook, title: e.target.value})}
-                    placeholder={t("placeholderTitle")}
-                    />
-                    <input type="text" 
-                    value={editBook.releaseDate}
-                    onChange={(e) => setEditBook({...editBook, releaseDate: e.target.value})}
-                    placeholder={t('placeholderReleaseDate')}
-                    />
-                    <input type="text" 
-                    value={editBook.category}
-                    onChange={(e) => setEditBook({...editBook, category: e.target.value})}
-                    placeholder={t("placeholderCategory")}
-                    />
-                    <input type="number" 
-                    value={editBook.price}
-                    onChange={(e) => setEditBook({...editBook, price: e.target.value })}
-                    placeholder={t("placeholderPrice")}
-                    />
-                    <select 
-                    value={editBook.status}
-                    onChange={(e) => setEditBook({...editBook, status: e.target.value})}>
-                      <option value="Borrow only">{t('statusBorrowOnly')}</option>
-                      <option value="Sell & Borrow">{t('statusSellBorrow')}</option>
-                      <option value="Read Only">{t('statusReadOnly')}</option>
-
-                    </select>
-                    <div className="edit-buttons">
-                      <button className="save-button" onClick={handleUpdate}>{t('saveButton')}</button>
-                      <button className="cancel-button" onClick={() => setEditBook(null)}>{t('cancelButton')}</button>
-                        <button type="button" className="btn btn-danger" onClick={() => handleDelete(editBook.id)}>{t('deleteButton')}</button>
-                    </div>
-                    
-                  </div>
-                )}
+        {editBook && (
+          <div className="edit-popup">
+            <h3>{t("editPopupTitle")}</h3>
+            <input type="text" 
+              value={editBook.title}
+              onChange={(e) => setEditBook({...editBook, title: e.target.value})}
+              placeholder={t("placeholderTitle")}
+            />
+            <input type="text" 
+              value={editBook.releaseDate}
+              onChange={(e) => setEditBook({...editBook, releaseDate: e.target.value})}
+              placeholder={t('placeholderReleaseDate')}
+            />
+            <input type="text" 
+              value={editBook.category}
+              onChange={(e) => setEditBook({...editBook, category: e.target.value})}
+              placeholder={t("placeholderCategory")}
+            />
+            <input type="number" 
+              value={editBook.price}
+              onChange={(e) => setEditBook({...editBook, price: e.target.value })}
+              placeholder={t("placeholderPrice")}
+            />
+            <select 
+              value={editBook.status}
+              onChange={(e) => setEditBook({...editBook, status: e.target.value})}>
+              <option value="Borrow only">{t('statusBorrowOnly')}</option>
+              <option value="Sell & Borrow">{t('statusSellBorrow')}</option>
+              <option value="Read Only">{t('statusReadOnly')}</option>
+            </select>
+            <div className="edit-buttons">
+              <button className="save-button" onClick={handleUpdate}>{t('saveButton')}</button>
+              <button className="cancel-button" onClick={() => setEditBook(null)}>{t('cancelButton')}</button>
+              <button type="button" className="btn btn-danger" onClick={() => handleDelete(editBook.id)}>{t('deleteButton')}</button>
             </div>
-        </>
-    )
+          </div>
+        )}
+      </div>
+    </>
+  )
 }
 
 export default BooksManagement;

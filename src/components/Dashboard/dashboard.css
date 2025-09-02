@@ -1,3 +1,21 @@
+.dashboard-container {
+  padding: 20px;
+}
+
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+  }
+  
+  .stat-card {
+    padding: 20px;
+    border-radius: 12px;
+    background-color: #f5f7fa;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    }
+    
 .stat-card h5 {
   margin-bottom: 20px;
   color: #333;
@@ -5,14 +23,14 @@
 
   }
   
-.stat-card p {
-  font-size: 24px;
-  font-weight: bold;
-  color: #3D3D29;
-  margin-bottom: 0;
-  
-  }
-  
+  .stat-card p {
+    font-size: 24px;
+    font-weight: bold;
+    color: chocolate;
+    margin-bottom: 0;
+    
+    }
+    
       
 .recent-table {
   width: 100%;
@@ -20,183 +38,17 @@
   margin-top: 10px;
 }
 
+.recent-table th,
+.recent-table td {
+  border: 1px solid #ccc;
+  padding: 12px;
+  text-align: left;
+  }
+  
+.recent-table th {
+  background-color: #e9ecef;
+}
 
 .recent-table tr:nth-child(even) {
   background-color: #f9f9f9;
   }  
-  .dashboard-container {
-  padding: 20px;
-}
-
-.stats-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
-}
-
-.stat-card {
-  background: #DEB887;
-  padding: 20px;
-  text-align: center;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-  justify-content: space-between;
-}
-
-.stat-card:hover {
-  transform: translateY(-5px);
-}
-
-.stat-icon {
-  font-size: 2rem;
-  margin-bottom: 10px;
-}
-
-.stat-number {
-  font-size: 2rem;
-  font-weight: bold;
-  margin: 10px 0;
-  color: #2c3e50;
-}
-
-.stat-subtext {
-  color: #7f8c8d;
-  font-size: 0.8rem;
-}
-
-
-
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-}
-
-.stat-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.stat-label {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-.stat-value {
-  font-weight: bold;
-  color: #27ae60;
-}
-
-@media (max-width: 768px) {
-  .stats-cards {
-    grid-template-columns: 1fr;
-  }
-  
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-}
-/* إضافات جديدة للـ CSS */
-
-
-
-
-
-
-.detailed-stats {
-  margin-bottom: 30px;
-}
-
-.stat-detail-card {
-  padding: 20px;
-  height: 100%;
-}
-
-.stat-detail-card h5 {
-  margin-bottom: 20px;
-  color: #2c3e50;
-}
-
-.stat-details {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.stat-detail-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.stat-detail-item:last-child {
-  border-bottom: none;
-}
-
-.stat-detail-item span {
-  color: #7f8c8d;
-}
-
-.stat-detail-item strong {
-  color: #2c3e50;
-  font-weight: bold;
-}
-
-
-.recent-table th {
-  background-color: #f8f9fa;
-  padding: 12px;
-  font-weight: bold;
-  text-align: left;
-}
-
-.recent-table td {
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
-}
-
-.status-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
-.status-badge.borrow {
-  background-color: #74b9ff;
-  color: white;
-}
-
-.status-badge.sale {
-  background-color: #fdcb6e;
-  color: white;
-}
-
-.status-badge.reading {
-  background-color: #00b894;
-  color: white;
-}
-
-@media (max-width: 768px) {
-  .stats-cards {
-    grid-template-columns: 1fr;
-  }
-  
-  .detailed-stats .row {
-    flex-direction: column;
-  }
-  
-  .detailed-stats .col-md-4 {
-    margin-bottom: 20px;
-  }
-}

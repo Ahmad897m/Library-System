@@ -1,327 +1,129 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppSelector, useAppDispatch } from '../../redux/hooks';
-import { selectBooksForReading } from '../../redux/slices/bookSlice';
-import { updateBook } from '../../redux/slices/bookSlice';
-import { addTransaction } from '../../redux/slices/transactionsSlice';
-import { addCustomer } from '../../redux/slices/customerSlice';
 import './readingOnly.css'
 
-const ReadingOnly = () => {
-  const { t, i18n } = useTranslation();
-  const dispatch = useAppDispatch();
-  
-  const books = useAppSelector(selectBooksForReading);
-  const [searchTerm, setSearchTerm] = useState("");
+const ReadingOnly = ({ books, addCustomerLog }) => {
+  const { t } = useTranslation();
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchDone, setSearchDone] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [successMsg, setSuccessMsg] = useState('');
   const [selectedBook, setSelectedBook] = useState(null);
-  const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const [showResults, setShowResults] = useState(false);
-  const [showCustomerPopup, setShowCustomerPopup] = useState(false);
+  const [customerName, setCustomerName] = useState('');
+  const [readCount, setReadCount] = useState(0);
 
-  // البحث في الكتب
-  const searchBooks = () => {
-    if (!searchTerm.trim()) return [];
-    
-    return books.filter(
+  const handleSearch = () => {
+    const results = books.filter(
       (book) =>
-        book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.author?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.isbn?.includes(searchTerm)
+        book.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (book.internalReadOnly || book.isForSale || book.isBorrowable)
     );
+    setSearchResults(results);
+    setSearchDone(true);
   };
 
-  const results = searchBooks();
-
-  // إنشاء معرف عميل فريد
-  const generateCustomerId = () => {
-    return 'CUST-' + Math.floor(100000 + Math.random() * 900000);
-  };
-
-  // معالجة بدء القراءة
-  const handleReading = () => {
-    if (!selectedBook || !customerName.trim()) {
-      setError(t("fillRequiredFields"));
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!selectedBook || !customerName) {
+      alert(t("pleaseSelectBookAndName"));
       return;
     }
 
-    // التحقق من نوع الكتاب - يجب أن يكون للقراءة فقط
-    if (selectedBook.status !== 'reading' && selectedBook.status !== 'reading_out') {
-      setError(t("cannotRead"));
-      return;
-    }
+    addCustomerLog({
+      name: customerName,
+      action: t("read"),
+      bookTitle: selectedBook.title
+    });
 
-    // التحقق إذا كانت النسخ = 0
-    if (selectedBook.copies <= 0) {
-      setError("No copies available");
-      return;
-    }
-
-    // إنشاء عميل جديد
-    const customerId = generateCustomerId();
-    const customerData = {
-      id: customerId,
-      fullName: customerName,
-      phone: customerPhone,
-      memberId: customerId,
-      joinDate: new Date().toISOString().split('T')[0],
-      type: 'reading'
-    };
-    dispatch(addCustomer(customerData));
-
-    // إعداد بيانات المعاملة - للقراءة فقط بدون أي حقول للإعارة
-    const transactionData = {
-      id: `read-${Date.now()}`,
-      customerId: customerId,
-      customerName: customerName,
-      customerPhone: customerPhone,
-      bookId: selectedBook.id,
-      bookTitle: selectedBook.title,
-      author: selectedBook.author,
-      category: selectedBook.category,
-      action: "Read",
-      price: 0,
-      timestamp: new Date().toISOString(),
-      status: 'active_reading',
-      sessionStart: new Date().toISOString(),
-      sessionType: 'reading',
-      returned: false
-      // لا تضيف أي حقول متعلقة بالإعارة هنا
-    };
-
-    // إضافة المعاملة
-    dispatch(addTransaction(transactionData));
-
-    // تحديث حالة الكتاب وتقليل عدد النسخ
-    const updatedCopies = selectedBook.copies - 1;
-    
-    // تحديد الحالة الجديدة بناءً على عدد النسخ المتبقية
-    let newStatus = selectedBook.status;
-    if (updatedCopies === 0) {
-      newStatus = 'reading_out';
-    }
-    
-    dispatch(updateBook({
-      id: selectedBook.id,
-      updates: { 
-        copies: updatedCopies,
-        status: newStatus,
-        currentReader: customerName,
-        readingStart: new Date().toISOString(),
-        isReading: true,
-        readingSessionId: `read-${Date.now()}`
-      }
-    }));
-
-    // رسالة النجاح
-    setMessage(t("readingStarted", {
-      book: selectedBook.title,
-      customer: customerName
-    }));
-
-    // إغلاق البوب أب وإعادة التعيين
-    setShowCustomerPopup(false);
+    setSuccessMsg(t("readingStarted", { title: selectedBook.title, username: customerName }));
+    setReadCount((prev) => prev + 1);
     setSelectedBook(null);
-    setCustomerName("");
-    setCustomerPhone("");
-    setError("");
+    setCustomerName('');
+    setSearchTerm('');
+    setSearchResults([]);
+    setSearchDone(false);
 
-    setTimeout(() => setMessage(""), 4000);
-  };
-
-  // فتح بوب أب إدخال البيانات عند اختيار كتاب
-  const handleBookSelect = (book) => {
-    // التحقق إذا كانت النسخ = 0
-    if (book.copies <= 0) {
-      setError("No copies available");
-      return;
-    }
-    
-    // التحقق من نوع الكتاب - يجب أن يكون للقراءة فقط
-    if (book.status !== 'reading' && book.status !== 'reading_out') {
-      setError(t("cannotRead"));
-      return;
-    }
-    
-    setSelectedBook(book);
-    setShowCustomerPopup(true);
-    setError("");
+    setTimeout(() => setSuccessMsg(''), 3000);
   };
 
   return (
-    <div className="container py-4" dir={i18n.language === "ar" ? "rtl" : "ltr"}>
-      <h2 className="mb-4">📖 {t("readingRoom")}</h2>
+    <div className="container py-4">
+      <h3>📖 {t("readingRoom")}</h3>
 
-      {/* البحث عن الكتاب */}
-      <div className="card mb-4">
-        <div className="card-body">
-          <h5 className="card-title">🔍 {t("searchBook")}</h5>
-          <div className="row g-2">
-            <div className="col-md-8">
-              <input
-                type="text"
-                placeholder={t("searchBookPlaceholder")}
-                className="form-control"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && setShowResults(true)}
-              />
-            </div>
-            <div className="col-md-4">
-              <button 
-                className="btn btn-primary w-100 h-100"
-                onClick={() => setShowResults(true)}
-              >
-                {t("search")}
-              </button>
-            </div>
-          </div>
-
-          {showResults && (
-            <div className="mt-3">
-              <h6>{t("searchResults")} ({results.length})</h6>
-              {results.length === 0 ? (
-                <div className="alert alert-warning mb-0">
-                  {t("noBooksFound")}
-                </div>
-              ) : (
-                <div className="search-results">
-                  {results.map((book) => (
-                    <div
-                      key={book.id}
-                      className={`book-result ${(book.status === 'reading' || book.status === 'reading_out') && book.copies > 0 ? 'can-read' : 'cannot-read'}`}
-                      onClick={() => (book.status === 'reading' || book.status === 'reading_out') && book.copies > 0 && handleBookSelect(book)}
-                    >
-                      <div className="book-info">
-                        <strong>{book.title}</strong>
-                        <div>
-                          <small className="text-muted">
-                            {t("by")} {book.author} | {t("status")}: {t(book.status)}
-                          </small>
-                        </div>
-                        <div>
-                          <small className={book.copies === 0 ? 'text-danger' : 'text-success'}>
-                            {t("copies")}: {book.copies}
-                            {book.copies === 0 && " - No copies available"}
-                          </small>
-                        </div>
-                      </div>
-                      <span className="select-indicator">
-                        {(book.status === 'reading' || book.status === 'reading_out') && book.copies > 0 ? "👉" : "❌"}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+      {successMsg && (
+        <div className="alert alert-success fixed-top text-center mt-3">
+          {successMsg}
         </div>
+      )}
+
+      <div className="mb-3 mt-4">
+        <input
+          type="text"
+          className="form-control"
+          placeholder={t("searchPlaceholder")}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <button className="btn btn-secondary mt-2" onClick={handleSearch}>
+          {t("search")}
+        </button>
       </div>
 
-      {/* بوب أب إدخال بيانات العميل */}
-      {showCustomerPopup && selectedBook && selectedBook.copies > 0 && (
-        <div className="customer-popup-overlay">
-          <div className="customer-popup">
-            <div className="popup-header">
-              <h5>📖 {t("readingSession")}</h5>
-              <button 
-                className="close-btn"
-                onClick={() => {
-                  setShowCustomerPopup(false);
-                  setSelectedBook(null);
-                }}
-              >
-                ×
-              </button>
-            </div>
+      {searchDone && searchResults.length === 0 && (
+        <div className="alert alert-warning">
+          ❗ {t("noResultsInternal", { term: searchTerm })}
+        </div>
+      )}
 
-            <div className="popup-body">
-              <div className="selected-book-info">
-                <h6>{selectedBook.title}</h6>
-                <p>{t("by")} {selectedBook.author}</p>
-                <p>{t("category")}: {selectedBook.category}</p>
-                <p className={selectedBook.copies === 0 ? 'text-danger' : 'text-success'}>
-                  {t("availableCopies")}: {selectedBook.copies}
-                </p>
-                <p className="book-type-badge reading-badge">
-                  📖 {t("forReadingOnly")}
-                </p>
-              </div>
-
-              <div className="form-group">
-                <label>{t("customerName")} *</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder={t("enterCustomerName")}
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>{t("customerPhone")}</label>
-                <input
-                  type="tel"
-                  className="form-control"
-                  placeholder={t("enterCustomerPhone")}
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                />
-              </div>
-
-              <div className="reading-summary">
-                <h6>📋 {t("readingSummary")}</h6>
-                <p>{t("serviceType")}: <strong>{t("freeReading")}</strong></p>
-                <p>{t("noTimeLimit")}</p>
-                <p>{t("comfortableEnvironment")}</p>
-                <p className="text-success">{t("noChargesApply")}</p>
-                <p>{t("copiesAfterReading")}: <strong>{selectedBook.copies - 1}</strong></p>
-                {selectedBook.copies - 1 === 0 && (
-                  <p className="text-warning">⚠️ No copies will remain during reading session</p>
-                )}
-              </div>
-            </div>
-
-            <div className="popup-footer">
+      {searchResults.length > 0 && (
+        <div className="result-list">
+          <h5>{t("internalReadingAvailable")}</h5>
+          {searchResults.map((book) => (
+            <div key={book.id} className="card p-2 mb-2">
+              <strong>{book.title}</strong> - <em>{book.author}</em>
+              <br />
+              📂 {t("category")}: {book.category}
+              <br />
               <button
-                className="btn btn-success"
-                onClick={handleReading}
-                disabled={!customerName.trim()}
+                className="btn btn-sm btn-outline-success mt-2"
+                onClick={() => setSelectedBook(book)}
               >
-                ✅ {t("startReading")}
-              </button>
-              <button
-                className="btn btn-secondary"
-                onClick={() => setShowCustomerPopup(false)}
-              >
-                {t("cancel")}
+                {t("selectBook")}
               </button>
             </div>
+          ))}
+        </div>
+      )}
+
+      {selectedBook && (
+        <form
+          className="mt-4 pop-card shadow-sm card p-3 mb-4"
+          onSubmit={handleSubmit}
+        >
+          <h5>{t("readingSession")}</h5>
+          <p>
+            {t("selectedBook")}: <strong>{selectedBook.title}</strong>
+          </p>
+          <div className="mb-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder={t("customerName")}
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+            />
           </div>
-        </div>
+          <button type="submit" className="btn btn-success">
+            {t("startReading")}
+          </button>
+        </form>
       )}
 
-      {/* الرسائل */}
-      {error && (
-        <div className="alert alert-danger mt-3">
-          ⚠️ {error}
-        </div>
-      )}
-
-      {message && (
-        <div className="alert alert-success mt-3">
-          ✅ {message}
-          <br />
-          <small>📚 {t("sessionSentToCustomerPage")}</small>
-          {selectedBook && selectedBook.copies - 1 === 0 && (
-            <><br /><small className="text-warning">⚠️ Book status changed to reading_out</small></>
-          )}
-        </div>
-      )}
+      <hr className="my-4" />
+      <div className="alert alert-info">
+        📚 {t("totalReadCount")}: <strong>{readCount}</strong>
+      </div>
     </div>
   );
 };
