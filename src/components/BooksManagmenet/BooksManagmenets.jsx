@@ -78,50 +78,65 @@ const handleDelete = (id) => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   />
 
-                  <select value={selectedCategory}  onChange={(e) => setSelectedCategory(e.target.value)} name="" id="">
-                    <option value="All">{t("allSections")}</option>
-                    {[...new Set(books.map((b) => b.category))].map((cat, i) =>( 
-                      <option key={i} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </div>
-                  {filteredBooks.length === 0 ? (
-                    <p className="no-books-message">{t("noBooksMessage")}</p>
-                  ) : (
-                    
-                    <>
-             
-                <table className="books-table">
-                    <thead>
-                        <tr>
-                            {/* <th>Cover</th> */}
-                            <th >{t("tableTitle")}</th>
-                            <th>{t("tableAuthor")}</th>
-                            <th>{t("tableReleaseDate")}</th>
-                            <th>{t("tableCategory")}</th>
-                            <th>{t("tableStatus")}</th>
-                            <th>{t("tablePrice")}</th>
-                            <th>{t("tableCopies")}</th>
-                            <th>{t("tableActions")}</th>
-                        </tr>
-                    </thead>
-                  <tbody>
-                    {filteredBooks.slice(0, visibleBooksCount).map((book) => (
-                      <tr key={book.id} >
-                        <td>{book.title}</td>
-                        <td>{book.author}</td>
-                        <td>{book.releaseDate}</td>
-                        <td>{book.category}</td>
-                        <td>{book.status}</td>
-                        <td className="text-center">{book.price}</td>
-                        <td className="text-center">{book.copies}</td>
-                        <td>
-                          <button className="edit-button" onClick={() => handleEdit(book)}>{t("editButton")}</button>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-                </table> 
+          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} name="" id="">
+            <option value="All">{t("allSections")}</option>
+            {[...new Set(books.map((b) => b.category))].map((cat, i) =>( 
+              <option key={i} value={cat}>{cat}</option>
+            ))}
+          </select>
+        </div>
+
+        {loading ? (
+          <p>{t("loading")}</p>
+        ) : error ? (
+          <p className="error-message">{error}</p>
+        ) : filteredBooks.length === 0 ? (
+          <p className="no-books-message">{t("noBooksMessage")}</p>
+        ) : (
+          <>
+            <table className="books-table">
+              // In your table, add a column for the cover image
+              <thead>
+                <tr>
+                  <th>{t("tableCover")}</th>
+                  <th>{t("tableTitle")}</th>
+                  <th>{t("tableAuthor")}</th>
+                  <th>{t("tableReleaseDate")}</th>
+                  <th>{t("tableCategory")}</th>
+                  <th>{t("tableStatus")}</th>
+                  <th>{t("tablePrice")}</th>
+                  <th>{t("tableCopies")}</th>
+                  <th>{t("tableActions")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredBooks.slice(0, visibleBooksCount).map((book) => (
+                  <tr key={book.id}>
+                    <td>
+                      {book.cover ? (
+                        <img 
+                          src={`${process.env.PUBLIC_URL}/images/${book.cover}`} 
+                          alt={book.title}
+                          style={{ width: '50px', height: 'auto' }} 
+                        />
+                      ) : (
+                        <div className="no-cover">{t("noCover")}</div>
+                      )}
+                    </td>
+                    <td>{book.title}</td>
+                    <td>{book.author}</td>
+                    <td>{book.releaseDate}</td>
+                    <td>{book.category}</td>
+                    <td>{book.status}</td>
+                    <td className="text-center">{book.price}</td>
+                    <td className="text-center">{book.copies}</td>
+                    <td>
+                      <button className="edit-button" onClick={() => handleEdit(book)}>{t("editButton")}</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table> 
 
                 {visibleBooksCount < filteredBooks.length && (
                   <button 
