@@ -256,7 +256,7 @@ const Dashboard = () => {
                   </span>
                 </td>
                 <td>${book.price}</td>
-                <td>{new Date(book.addedDate).toLocaleDateString()}</td>
+                <td>{new Date(book.addedDate).toLocaleDateString("en-US")}</td>
               </tr>
             ))}
           </tbody>
