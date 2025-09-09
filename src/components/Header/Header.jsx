@@ -79,11 +79,12 @@ const Header = ({ onLogout }) => {
     };
 
     return (
+        <>
         <Navbar bg="light" expand="lg" className="shadow-sm" style={{ height: '70px', 
             direction: isArabic ? 'rtl' : 'ltr',
             textAlign: isArabic ? 'right' : 'left' }}>
             <Container fluid>
-                <Navbar.Brand href="/dashboard" className="fw-bold">
+                <Navbar.Brand href="/dashboard" className="fw-bold" style={{fontSize: "2rem", fontFamily: "Playfair Display"}}>
                     {t("libraryManagement")}
                 </Navbar.Brand>
 
@@ -160,6 +161,7 @@ const Header = ({ onLogout }) => {
                 </Button>
             </Container>
         </Navbar>
+        </>
     );
 }
 

@@ -16,19 +16,6 @@ import Login from './components/login/Login';
 function App() {
 
 
-  // mode
-
-  const [darkMode, setDarkMode] = useState(() => {
-  return localStorage.getItem('darkMode') === 'true';
-});
-
-const toggleDarkMode = () => {
-  setDarkMode(prev => {
-    const newMode = !prev;
-    localStorage.setItem('darkMode', newMode);
-    return newMode;
-  });
-};
 
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -59,7 +46,7 @@ const toggleDarkMode = () => {
   if (!isLoggedIn) return <Login onLogin={handleLogin} />;
 
   return (
-<div className={`app ${darkMode ? 'dark' : ''}`}>
+<div className= "app">
       <Header onLogout={handleLogout} />
       <div className="Home" style={{ display: 'flex', flexWrap: 'nowrap' }}>
         <Sidebar onLogout={handleLogout} />
@@ -75,7 +62,7 @@ const toggleDarkMode = () => {
             <Route path='/Sales' element={<Sales books={books} addCustomerLog={addCustomerLog} />} />
             <Route path='/Customers' element={<Customer customersLog={customersLog} />} />
             {/* <Route path='/Notifications' element={<Notifications customersLog={customersLog} />} /> */}
-            <Route path='/Settings' element={<SettingsPage toggleDarkMode={toggleDarkMode} darkMode={darkMode} />} />
+            <Route path='/Settings' element={<SettingsPage />} />
           </Routes>
         </div>
       </div>

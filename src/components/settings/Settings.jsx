@@ -61,7 +61,7 @@ const Settings = () => {
 
   return (
     <div className="container mt-4">
-      <h2>⚙️ {t("settings")}</h2>
+      <h2 style={{fontFamily: "Lora", fontWeight: "800", letterSpacing: "1px"}}>⚙️ {t("settings")}</h2>
       <div className="button" style={{marginTop: "20px"}}>
         <>
       <button className="changeBtn btn" onClick={toggleLanguage}>

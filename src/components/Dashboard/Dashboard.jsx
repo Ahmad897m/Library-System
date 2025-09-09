@@ -70,7 +70,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <h2 className="mb-4">📈 {t('dashboardTitle')}</h2>
+      <h2 style={{fontFamily: "Lora", fontWeight: "800", letterSpacing: "1px"}} className="mb-4">📈 {t('dashboardTitle')}</h2>
 
       <div className="stats-cards">
         {/* البطاقات الأساسية */}

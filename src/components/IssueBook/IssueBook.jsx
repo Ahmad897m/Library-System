@@ -45,12 +45,14 @@ const IssueBook = () => {
   const results = searchBooks();
 
   // حساب سعر الإعارة
-  const calculateBorrowPrice = () => {
-    if (!selectedBook || !selectedBook.price) return 0;
-    const price = parseFloat(selectedBook.price);
-    const percentage = borrowPrices[borrowPeriod];
-    return (price * percentage).toFixed(2);
-  };
+  // تعديل الدالة لتقبل فترة محددة
+const calculateBorrowPrice = (period = borrowPeriod) => {
+  if (!selectedBook || !selectedBook.price) return 0;
+  const price = parseFloat(selectedBook.price);
+  const percentage = borrowPrices[period];
+  return (price * percentage).toFixed(2);
+};
+
 
   // إنشاء معرف عميل فريد
   const generateMemberId = () => {
@@ -183,7 +185,7 @@ const IssueBook = () => {
 
   return (
     <div className="container py-4" dir={i18n.language === "ar" ? "rtl" : "ltr"}>
-      <h2 className="mb-4">📚 {t("bookBorrowSystem")}</h2>
+      <h2 style={{fontFamily: "Lora", fontWeight: "800", letterSpacing: "1px"}} className="mb-4">📚 {t("bookBorrowSystem")}</h2>
 
       {/* البحث عن الكتاب */}
       <div className="card mb-4">
@@ -202,7 +204,8 @@ const IssueBook = () => {
             </div>
             <div className="col-md-4">
               <button 
-                className="btn btn-primary w-100 h-100"
+                className="btn w-100 h-100" 
+                style={{background: "chocolate", color: "white"}}
                 onClick={() => setShowResults(true)}
               >
                 {t("search")}
@@ -317,41 +320,44 @@ const IssueBook = () => {
                 <label>⏳ {t("borrowPeriod")}</label>
                 <div className="borrow-options">
                   <div className="borrow-option">
-                    <input
-                      type="radio"
-                      name="borrowPeriod"
-                      value="2"
-                      checked={borrowPeriod === "2"}
-                      onChange={(e) => setBorrowPeriod(e.target.value)}
-                    />
-                    <label>
-                      {t("twoDays")} - ${calculateBorrowPrice()} (10%)
-                    </label>
-                  </div>
-                  <div className="borrow-option">
-                    <input
-                      type="radio"
-                      name="borrowPeriod"
-                      value="7"
-                      checked={borrowPeriod === "7"}
-                      onChange={(e) => setBorrowPeriod(e.target.value)}
-                    />
-                    <label>
-                      {t("oneWeek")} - ${calculateBorrowPrice()} (20%)
-                    </label>
-                  </div>
-                  <div className="borrow-option">
-                    <input
-                      type="radio"
-                      name="borrowPeriod"
-                      value="15"
-                      checked={borrowPeriod === "15"}
-                      onChange={(e) => setBorrowPeriod(e.target.value)}
-                    />
-                    <label>
-                      {t("fifteenDays")} - ${calculateBorrowPrice()} (25%)
-                    </label>
-                  </div>
+  <input
+    type="radio"
+    name="borrowPeriod"
+    value="2"
+    checked={borrowPeriod === "2"}
+    onChange={(e) => setBorrowPeriod(e.target.value)}
+  />
+  <label>
+    {t("twoDays")} - ${calculateBorrowPrice("2")} (10%)
+  </label>
+</div>
+
+<div className="borrow-option">
+  <input
+    type="radio"
+    name="borrowPeriod"
+    value="7"
+    checked={borrowPeriod === "7"}
+    onChange={(e) => setBorrowPeriod(e.target.value)}
+  />
+  <label>
+    {t("oneWeek")} - ${calculateBorrowPrice("7")} (20%)
+  </label>
+</div>
+
+<div className="borrow-option">
+  <input
+    type="radio"
+    name="borrowPeriod"
+    value="15"
+    checked={borrowPeriod === "15"}
+    onChange={(e) => setBorrowPeriod(e.target.value)}
+  />
+  <label>
+    {t("fifteenDays")} - ${calculateBorrowPrice("15")} (25%)
+  </label>
+</div>
+
                 </div>
               </div>
 

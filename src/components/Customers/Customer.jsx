@@ -211,7 +211,7 @@ const Customer = () => {
 
   return (
     <div className="container py-4" dir={i18n.language === "ar" ? "rtl" : "ltr"}>
-      <h2 className="mb-4">👥 {t("customersManagement")}</h2>
+      <h2 style={{fontFamily: "Lora", fontWeight: "800", letterSpacing: "1px"}} className="mb-4">👥 {t("customersManagement")}</h2>
 
       {/* بطاقات الإحصائيات */}
       <div className="stats-cards mb-4">

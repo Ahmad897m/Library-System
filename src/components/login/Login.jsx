@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import './login.css';
 import backgroundImage from '../../backgound.jpg';
 
 const Login = ({ onLogin }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -26,13 +26,13 @@ const Login = ({ onLogin }) => {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <h2>{t('libraryManagement')}</h2>
+          <h2 style={{fontSize: "2rem", fontFamily: "Playfair Display"}} >{t('libraryManagement')}</h2>
           <p>{t('loginToAccess')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="password">{t('password')}</label>
+            <label htmlFor="password"  >{t('password')}</label>
             <input
               type="password"
               id="password"

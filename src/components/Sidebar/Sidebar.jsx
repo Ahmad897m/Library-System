@@ -30,46 +30,46 @@ const Sidebar = ({ onLogout }) => {
     <>
       <div className="d-flex flex-column bg-light vh-150 p-3 shadow-sm" style={{ minWidth: '300px', justifyContent: 'space-between' }}>
         <div>
-          <h4 className="mb-4">{t('libraryManagement')}</h4>
-          <ul className="nav flex-column">
+          {/* <h4 className="mb-4">{t('libraryManagement')}</h4> */}
+          <ul className="nav flex-column" style={{fontFamily: "Lora", fontWeight: "800", letterSpacing: "1px" , gap: "8px"}}>
             <li className="nav-item mb-2">
-              <NavLink to='/dashboard' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}>
+              <NavLink to='/dashboard' className={({ isActive }) => isActive ? ' nav-link active text-dark shadow-sm navEdit' : 'nav-link navEdit'}>
                 <MdDashboard /> {t('dashboard')}
               </NavLink>
             </li>
 
             <li className="nav-item mb-2">
-              <NavLink to='/BookManagement' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}>
+              <NavLink to='/BookManagement' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm navEdit' : 'nav-link navEdit'}>
                 <FaBook /> {t('booksManagement')}
               </NavLink>
             </li>
 
             <li className="nav-item mb-2">
-              <NavLink to='/AddNewBook' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}>
+              <NavLink to='/AddNewBook' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm navEdit' : 'nav-link navEdit'}>
                 <FaPlusSquare /> {t('addNewBook')}
               </NavLink>
             </li>
 
             <li className="nav-item mb-2">
-              <NavLink to='/Issue-Return' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}>
+              <NavLink to='/Issue-Return' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm navEdit' : 'nav-link navEdit'}>
                 <FaExchangeAlt /> {t('issueReturn')}
               </NavLink>
             </li>
 
             <li className="nav-item mb-2">
-              <NavLink to='/ReadingRoom' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}>
-                <GiBookmarklet /> {t('readingRoom')}
+              <NavLink to='/ReadingRoom' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm navEdit' : 'nav-link navEdit'}>
+                <GiBookmarklet /> {t('readingRoom')} 
               </NavLink>
             </li>
 
             <li className="nav-item mb-2">
-              <NavLink to='/Sales' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}>
+              <NavLink to='/Sales' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm navEdit' : 'nav-link navEdit'}>
                 <FaMoneyBillWave /> {t('sales')}
               </NavLink>
             </li>
 
             <li className="nav-item mb-2">
-              <NavLink to='/Customers' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}>
+              <NavLink to='/Customers' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm navEdit' : 'nav-link navEdit'}>
                 <HiOutlineDocumentReport /> {t('customers')}
               </NavLink>
             </li>
@@ -81,7 +81,7 @@ const Sidebar = ({ onLogout }) => {
             </li> */}
 
             <li className="nav-item mb-2">
-              <NavLink to='/Settings' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm' : 'nav-link'}>
+              <NavLink to='/Settings' className={({ isActive }) => isActive ? 'nav-link active text-dark shadow-sm navEdit' : 'nav-link navEdit'}>
                 <FiSettings /> {t('settings')}
               </NavLink>
             </li>

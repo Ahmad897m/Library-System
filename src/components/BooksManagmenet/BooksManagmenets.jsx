@@ -13,6 +13,11 @@
   import './booksManagement.css'
 
   const BooksManagement = () => {
+
+    // تعديل التاريخ بحيث لا يخرج ضمن الاطار
+
+    const [dateError, setDateError] = useState("");
+
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
     
@@ -49,6 +54,7 @@
       if (window.confirm(t('confirmDelete'))) {
         dispatch(deleteBook(id));
       }
+        dispatch(setEditBook(null))
     };
 
     const handleEditChange = (field, value) => {
@@ -147,7 +153,7 @@
     return (
       <>
         <div className="books-management-container">
-          <h2>🗂️ {t("booksManagementTitle")}</h2>
+          <h2 style={{fontFamily: "Lora", fontWeight: "800", letterSpacing: "1px"}} >🗂️ {t("booksManagementTitle")}</h2>
           
           <div className="search-filter">
             <input 
@@ -219,24 +225,82 @@
           {editBook && (
             <div className="edit-popup">
               <h3>{t("editPopupTitle")}</h3>
-              <input 
-                type="text" 
-                value={editBook.title}
-                onChange={(e) => handleEditChange('title', e.target.value)}
-                placeholder={t("placeholderTitle")}
-              />
-              <input 
-                type="date" 
-                value={editBook.publishedDate || editBook.releaseDate}
-                onChange={(e) => handleEditChange('publishedDate', e.target.value)}
-                placeholder={t('placeholderReleaseDate')}
-              />
-              <input 
-                type="text" 
-                value={editBook.category}
-                onChange={(e) => handleEditChange('category', e.target.value)}
-                placeholder={t("placeholderCategory")}
-              />
+             <input 
+              type="text" 
+              value={editBook.title}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^[^0-9]*$/.test(value)) { 
+                  handleEditChange('title', value);
+                }
+              }}
+              placeholder={t("placeholderTitle")}
+            />
+
+            {/* <input 
+              type="date" 
+              value={editBook.publishedDate || editBook.releaseDate || ""}
+              onChange={(e) => handleEditChange('publishedDate', e.target.value)} 
+              onBlur={(e) => {
+                const value = e.target.value;
+                if (!value) return; 
+
+                const minDate = new Date("1000-01-01");
+                const maxDate = new Date();
+                const selectedDate = new Date(value);
+
+                if (selectedDate < minDate) {
+                  handleEditChange('publishedDate', "1500-01-01");
+                } else if (selectedDate > maxDate) {
+                  handleEditChange('publishedDate', maxDate.toISOString().split("T")[0]);
+                }
+              }}
+              placeholder={t('placeholderReleaseDate')}
+              min="1500-01-01"
+              max={new Date().toISOString().split("T")[0]} 
+            /> */}
+
+
+          <input 
+            type="date" 
+            value={editBook.publishedDate || editBook.releaseDate || ""}
+            onChange={(e) => {
+              handleEditChange('publishedDate', e.target.value);
+              setDateError(""); 
+            }} 
+            onBlur={(e) => {
+              const value = e.target.value;
+              if (!value) return;
+
+              const minDate = new Date("1000-01-01");
+              const maxDate = new Date();
+              const selectedDate = new Date(value);
+
+              if (selectedDate < minDate || selectedDate > maxDate) {
+                setDateError(t("ErrorMassage"));
+                handleEditChange('publishedDate', ""); 
+              }
+            }}
+            placeholder={t('placeholderReleaseDate')}
+            min="1500-01-01"
+            max={new Date().toISOString().split("T")[0]} 
+          />
+
+          {dateError && <p className="text-danger">{dateError}</p>}
+
+
+            <input 
+              type="text" 
+              value={editBook.category}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^[^0-9]*$/.test(value)) { 
+                  handleEditChange('category', value);
+                }
+              }}
+              placeholder={t("placeholderCategory")}
+/>
+
               <input 
                 type="number" 
                 min="0"

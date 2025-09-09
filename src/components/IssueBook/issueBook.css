@@ -204,6 +204,7 @@
 .borrow-option input[type="radio"] {
   margin-right: 10px;
   flex: 0;
+  cursor: pointer;
 }
 
 .borrow-option label {

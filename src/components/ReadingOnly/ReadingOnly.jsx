@@ -153,7 +153,7 @@ const transactionData = {
 
   return (
     <div className="container py-4" dir={i18n.language === "ar" ? "rtl" : "ltr"}>
-      <h2 className="mb-4">📖 {t("readingRoom")}</h2>
+      <h2 style={{fontFamily: "Lora", fontWeight: "800", letterSpacing: "1px"}} className="mb-4">📖 {t("readingRoom")}</h2>
 
       {/* البحث عن الكتاب */}
       <div className="card mb-4">
@@ -172,7 +172,8 @@ const transactionData = {
             </div>
             <div className="col-md-4">
               <button 
-                className="btn btn-primary w-100 h-100"
+                className="btn w-100 h-100"
+                style={{background: "chocolate", color: "white"}}
                 onClick={() => setShowResults(true)}
               >
                 {t("search")}

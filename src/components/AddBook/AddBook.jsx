@@ -112,7 +112,7 @@ const AddBook = () => {
     return(
         <>
             <div className="container mt-4">
-                <h3>➕ {t('addNewBook')}</h3>
+                <h3 style={{fontFamily: "Lora", fontWeight: "800", letterSpacing: "1px"}}>➕ {t('addNewBook')}</h3>
 
                 {successMessage && (
                     <div className="alert alert-success mt-3" role="alert">
@@ -128,7 +128,19 @@ const AddBook = () => {
 
                     <div className="mb-3">
                         <label className="form-label">{t('author')}</label>
-                        <input type="text" className="form-control" name="author" value={book.author} onChange={handleChange} required />
+                        <input type="text" 
+                        className="form-control" 
+                        name="author" 
+                        required
+                        value={book.author} 
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            if (/^[A-Za-z\u0600-\u06FF\s]*$/.test(value)) {
+                                handleChange(e);
+                                }
+                         }}   
+                        />
+                            
                     </div>
 
                     <div className="mb-3">
@@ -139,7 +151,7 @@ const AddBook = () => {
                         name="publishedDate" 
                         value={book.publishedDate} 
                         onChange={handleChange}  
-                        min="1500-01-01"
+                        min="1000-01-01"
                         max={new Date().toISOString().split("T")[0]} 
                         />
 
@@ -147,7 +159,26 @@ const AddBook = () => {
 
                     <div className="mb-3">
                         <label className="form-label">{t('category')}</label>
-                        <input type="text" className="form-control" name="category" value={book.category} onChange={handleChange}  />
+                        <input
+                            type="text"
+                            className="form-control"
+                            name="category"
+                            value={book.category}
+                            onChange={(e) => {
+                                const value = e.target.value;
+
+                                if (/^[A-Za-z\u0600-\u06FF\s]*$/.test(value)) {
+                                handleChange(e);
+                                }
+                            }}
+                            // placeholder="أدخل الفئة"
+                            />
+
+
+
+
+
+                        {/* <input type="text" className="form-control" name="category" value={book.category} onChange={handleChange}  /> */}
                     </div>
 
                     <div className="mb-3">
@@ -174,7 +205,7 @@ const AddBook = () => {
                                     onBlur={(e) => handleBlur(e, 'price')}
                                     required={book.status !== 'reading'}
                                     min="0"
-                                    step="0.01"
+                                    // step="0.01"
                                 />
                             </div>
                         </div>
@@ -200,7 +231,7 @@ const AddBook = () => {
                         <textarea className="form-control" name="description" value={book.description} rows='3' onChange={handleChange} required />
                     </div>
 
-                    <button type="submit" className="btn btn-primary mt-5 add" >
+                    <button type="submit" className="btn btn-chocolate mt-5 add" >
                         {t('addBook')}
                     </button>
                 </form>
