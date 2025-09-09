@@ -11,9 +11,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <HashRouter>
+      <BrowserRouter basename="/Library-System">
         <App />
-      </HashRouter>
+      </BrowserRouter>
     </Provider>
   </React.StrictMode>
 );
