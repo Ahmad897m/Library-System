@@ -10,8 +10,6 @@ import IssueBook from './components/IssueBook/IssueBook';
 import ReadingOnly from './components/ReadingOnly/ReadingOnly';
 import Sales from './components/Sales/Sales';
 import Customer from './components/Customers/Customer';
-import Notifications from './components/Notifications/Notifications';
-import AddNewCustomer from './components/AddNewCustomer/AddNewCustomer';
 import SettingsPage from './components/settings/Settings';
 import Login from './components/login/Login';
 

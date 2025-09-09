@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { store } from './redux/store'; // تأكد أن المسار صحيح
+import { store } from './redux/store'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './i18n'; // يجب أن يُستورد قبل تشغيل App
+import './i18n'; 
 import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
