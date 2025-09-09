@@ -70,13 +70,13 @@ const toggleDarkMode = () => {
             <Route path='/' element={<Navigate to="/dashboard" replace />} />
             <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/AddNewBook' element={<AddBook />} />
-            <Route path='/AddNewCustomer' element={<AddNewCustomer />} />
+            {/* <Route path='/AddNewCustomer' element={<AddNewCustomer />} /> */}
             <Route path='/BookManagement' element={<BooksManagement />} />
             <Route path='/Issue-Return' element={<IssueBook addCustomerLog={addCustomerLog} />} />
             <Route path='/ReadingRoom' element={<ReadingOnly books={books} addCustomerLog={addCustomerLog} />} />
             <Route path='/Sales' element={<Sales books={books} addCustomerLog={addCustomerLog} />} />
             <Route path='/Customers' element={<Customer customersLog={customersLog} />} />
-            <Route path='/Notifications' element={<Notifications customersLog={customersLog} />} />
+            {/* <Route path='/Notifications' element={<Notifications customersLog={customersLog} />} /> */}
             <Route path='/Settings' element={<SettingsPage toggleDarkMode={toggleDarkMode} darkMode={darkMode} />} />
           </Routes>
         </div>
