@@ -7,74 +7,19 @@ class LocalStorageService {
             TRANSACTIONS: 'library_transactions',
             SETTINGS: 'library_settings'
         };
-        
-        this.initializeDefaultData();
     }
 
-    initializeDefaultData() {
-        if (!this.getBooks().length) {
-            const defaultBooks = [
-                {
-                    id: this.generateId(),
-                    title: 'مقدمة في علوم الحاسوب',
-                    author: 'أحمد محمد',
-                    publishedDate: '2023-01-15',
-                    category: 'علوم الحاسوب',
-                    status: 'borrow',
-                    price: 29.99,
-                    copies: 5,
-                    description: 'كتاب تمهيدي في علوم الحاسوب',
-                    addedDate: new Date().toISOString()
-                },
-                {
-                    id: this.generateId(),
-                    title: 'تعلم البرمجة بلغة JavaScript',
-                    author: 'سارة عبدالله',
-                    publishedDate: '2023-03-20',
-                    category: 'برمجة',
-                    status: 'sale',
-                    price: 35.50,
-                    copies: 3,
-                    description: 'دليل شامل لتعلم JavaScript',
-                    addedDate: new Date().toISOString()
-                },
-                {
-                    id: this.generateId(),
-                    title: 'القصص العربية الكلاسيكية',
-                    author: 'محمد علي',
-                    publishedDate: '2022-11-10',
-                    category: 'أدب',
-                    status: 'reading',
-                    price: 0,
-                    copies: 1,
-                    description: 'مجموعة من القصص العربية التقليدية',
-                    addedDate: new Date().toISOString()
-                }
-            ];
-            this.saveBooks(defaultBooks);
-        }
-
-        if (!this.getTransactions().length) {
-            const defaultTransactions = [];
-            this.saveTransactions(defaultTransactions);
-        }
-
-        if (!this.getCustomers().length) {
-            const defaultCustomers = [];
-            this.saveCustomers(defaultCustomers);
-        }
-    }
-
+    // ✅ توليد ID فريد
     generateId() {
         return Date.now().toString(36) + Math.random().toString(36).substr(2);
     }
 
-    // كتب
+    // ---------------- الكتب ----------------
     getBooks() {
         try {
             return JSON.parse(localStorage.getItem(this.STORAGE_KEYS.BOOKS)) || [];
         } catch (error) {
-            console.error('Error reading books from localStorage:', error);
+            console.error('Error reading books:', error);
             return [];
         }
     }
@@ -83,7 +28,7 @@ class LocalStorageService {
         try {
             localStorage.setItem(this.STORAGE_KEYS.BOOKS, JSON.stringify(books));
         } catch (error) {
-            console.error('Error saving books to localStorage:', error);
+            console.error('Error saving books:', error);
         }
     }
 
@@ -102,37 +47,30 @@ class LocalStorageService {
         return newBook;
     }
 
-
-
-
-
     updateBook(bookId, updates) {
-      const books = this.getBooks();
-  const index = books.findIndex(book => book.id === bookId);
-  if (index !== -1) {
-    // إذا كانت updates تحتوي على دالة، ننفذها للحصول على القيمة الجديدة
-    const processedUpdates = {};
-    Object.keys(updates).forEach(key => {
-      if (typeof updates[key] === 'function') {
-        // إذا كانت قيمة دالة، ننفذها مع القيمة الحالية
-        processedUpdates[key] = updates[key](books[index][key]);
-      } else if (key === 'copies') {
-        processedUpdates[key] = parseInt(updates[key]);
-      } else if (key === 'price') {
-        processedUpdates[key] = parseFloat(updates[key]);
-      } else {
-        processedUpdates[key] = updates[key];
-      }
-    });
+        const books = this.getBooks();
+        const index = books.findIndex(book => book.id === bookId);
 
-    books[index] = { ...books[index], ...processedUpdates };
-    this.saveBooks(books);
-    return books[index];
-  }
-  return null;
-}
+        if (index !== -1) {
+            const processedUpdates = {};
+            Object.keys(updates).forEach(key => {
+                if (typeof updates[key] === 'function') {
+                    processedUpdates[key] = updates[key](books[index][key]);
+                } else if (key === 'copies') {
+                    processedUpdates[key] = parseInt(updates[key]);
+                } else if (key === 'price') {
+                    processedUpdates[key] = parseFloat(updates[key]);
+                } else {
+                    processedUpdates[key] = updates[key];
+                }
+            });
 
-
+            books[index] = { ...books[index], ...processedUpdates };
+            this.saveBooks(books);
+            return books[index];
+        }
+        return null;
+    }
 
     deleteBook(bookId) {
         const books = this.getBooks();
@@ -140,12 +78,12 @@ class LocalStorageService {
         this.saveBooks(filteredBooks);
     }
 
-    // عملاء
+    // ---------------- العملاء ----------------
     getCustomers() {
         try {
             return JSON.parse(localStorage.getItem(this.STORAGE_KEYS.CUSTOMERS)) || [];
         } catch (error) {
-            console.error('Error reading customers from localStorage:', error);
+            console.error('Error reading customers:', error);
             return [];
         }
     }
@@ -154,7 +92,7 @@ class LocalStorageService {
         try {
             localStorage.setItem(this.STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
         } catch (error) {
-            console.error('Error saving customers to localStorage:', error);
+            console.error('Error saving customers:', error);
         }
     }
 
@@ -175,7 +113,7 @@ class LocalStorageService {
 
     updateCustomer(customerId, updates) {
         const customers = this.getCustomers();
-        const index = customers.findIndex(customer => customer.id === customerId);
+        const index = customers.findIndex(c => c.id === customerId);
         if (index !== -1) {
             customers[index] = { ...customers[index], ...updates };
             this.saveCustomers(customers);
@@ -184,12 +122,12 @@ class LocalStorageService {
         return null;
     }
 
-    // معاملات
+    // ---------------- المعاملات ----------------
     getTransactions() {
         try {
             return JSON.parse(localStorage.getItem(this.STORAGE_KEYS.TRANSACTIONS)) || [];
         } catch (error) {
-            console.error('Error reading transactions from localStorage:', error);
+            console.error('Error reading transactions:', error);
             return [];
         }
     }
@@ -198,7 +136,7 @@ class LocalStorageService {
         try {
             localStorage.setItem(this.STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactions));
         } catch (error) {
-            console.error('Error saving transactions to localStorage:', error);
+            console.error('Error saving transactions:', error);
         }
     }
 
@@ -217,25 +155,21 @@ class LocalStorageService {
     }
 
     getTransactionsByType(type) {
-        const transactions = this.getTransactions();
-        return transactions.filter(transaction => transaction.action === type);
+        return this.getTransactions().filter(t => t.action === type);
     }
 
     getTransactionsByCustomer(customerId) {
-        const transactions = this.getTransactions();
-        return transactions.filter(transaction => transaction.customerId === customerId);
+        return this.getTransactions().filter(t => t.customerId === customerId);
     }
 
     getTransactionsByBook(bookId) {
-        const transactions = this.getTransactions();
-        return transactions.filter(transaction => transaction.bookId === bookId);
+        return this.getTransactions().filter(t => t.bookId === bookId);
     }
 
-    // إحصائيات
+    // ---------------- الإحصائيات ----------------
     getLibraryStats() {
         const books = this.getBooks();
         const transactions = this.getTransactions();
-        const customers = this.getCustomers();
 
         const borrowedBooks = books.filter(book => book.status === 'borrow' && book.copies > 0).length;
         const soldBooks = transactions.filter(t => t.action === 'Buy').length;
@@ -263,20 +197,16 @@ class LocalStorageService {
         };
     }
 
-    // إعدادات
+    // ---------------- الإعدادات ----------------
     getSettings() {
         try {
             return JSON.parse(localStorage.getItem(this.STORAGE_KEYS.SETTINGS)) || {
-                borrowPrices: {
-                    "2": 0.10,
-                    "7": 0.20,
-                    "15": 0.25
-                },
+                borrowPrices: { "2": 0.10, "7": 0.20, "15": 0.25 },
                 currency: 'USD',
                 language: 'ar'
             };
         } catch (error) {
-            console.error('Error reading settings from localStorage:', error);
+            console.error('Error reading settings:', error);
             return {};
         }
     }
@@ -285,35 +215,30 @@ class LocalStorageService {
         try {
             localStorage.setItem(this.STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
         } catch (error) {
-            console.error('Error saving settings to localStorage:', error);
+            console.error('Error saving settings:', error);
         }
     }
 
     updateSettings(newSettings) {
-        const currentSettings = this.getSettings();
-        const updatedSettings = { ...currentSettings, ...newSettings };
-        this.saveSettings(updatedSettings);
-        return updatedSettings;
+        const current = this.getSettings();
+        const updated = { ...current, ...newSettings };
+        this.saveSettings(updated);
+        return updated;
     }
 
-    // أدوات مساعدة
+    // ---------------- أدوات مساعدة ----------------
     calculateBorrowPrice(bookPrice, borrowPeriod) {
         const settings = this.getSettings();
         const percentage = settings.borrowPrices?.[borrowPeriod] || 0.10;
         return (parseFloat(bookPrice) * percentage).toFixed(2);
     }
 
-    // تنظيف البيانات القديمة (اختياري)
     cleanupOldData(daysToKeep = 30) {
-        const cutoffDate = new Date();
-        cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - daysToKeep);
 
-        const transactions = this.getTransactions();
-        const recentTransactions = transactions.filter(transaction => {
-            return new Date(transaction.timestamp) >= cutoffDate;
-        });
-
-        this.saveTransactions(recentTransactions);
+        const recent = this.getTransactions().filter(t => new Date(t.timestamp) >= cutoff);
+        this.saveTransactions(recent);
     }
 }
 
