@@ -4,7 +4,7 @@ import { localStorageService } from '../../services/localStorageService';
 const initialState = {
   stats: {
     totalBooks: 0,
-    borrowedBooks: 0,
+    borrowedBooks: 0, // سيصبح الآن عدد مرات الاستعارة وليس عدد الكتب
     soldBooks: 0,
     readInLibrary: 0,
     customersServed: 0,
@@ -21,18 +21,20 @@ const statsSlice = createSlice({
       const books = localStorageService.getBooks();
       const transactions = localStorageService.getTransactions();
       
-      const borrowedBooks = books.filter(book => book.status === 'borrowed').length;
+      // حساب عدد مرات الاستعارة (عدد معاملات Borrow)
+      const borrowTransactions = transactions.filter(t => t.action === 'Borrow').length;
+      
       const soldTransactions = transactions.filter(t => t.action === 'Buy').length;
       const readTransactions = transactions.filter(t => t.action === 'Read').length;
       const uniqueCustomers = new Set(transactions.map(t => t.customerId)).size;
       
       const income = transactions
-        .filter(t => t.action === 'Buy')
-        .reduce((total, transaction) => total + (transaction.price || 0), 0);
+        .filter(t => t.action === 'Buy' || t.action === 'Borrow')
+        .reduce((total, transaction) => total + (parseFloat(transaction.price) || 0), 0);
 
       state.stats = {
         totalBooks: books.length,
-        borrowedBooks,
+        borrowedBooks: borrowTransactions, // عدد مرات الاستعارة
         soldBooks: soldTransactions,
         readInLibrary: readTransactions,
         customersServed: uniqueCustomers,

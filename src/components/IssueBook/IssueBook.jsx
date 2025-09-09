@@ -279,12 +279,12 @@ const IssueBook = () => {
                   {selectedBook.copies === 0 && " - No copies available"}
                 </p>
                 <p className="book-type-badge">
-                  {selectedBook.status === 'borrow' && "📚 " + t("forBorrow")}
+                  {selectedBook.status === 'borrow' && "" + t("forBorrow")}
                 </p>
               </div>
 
               <div className="form-group">
-                <label>{t("customerName")} *</label>
+                <label>{t("customerName")} </label>
                 <input
                   type="text"
                   className="form-control"
@@ -298,12 +298,19 @@ const IssueBook = () => {
               <div className="form-group">
                 <label>{t("customerPhone")}</label>
                 <input
-                  type="tel"
-                  className="form-control"
-                  placeholder={t("enterCustomerPhone")}
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                />
+                type="number"
+                className="form-control"
+                placeholder={t("enterCustomerPhone")}
+                value={customerPhone}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '' || parseInt(value) >= 0) {
+                    setCustomerPhone(value);
+                  }
+                }}
+                min="0"
+              />
+
               </div>
 
               <div className="form-group">

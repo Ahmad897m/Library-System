@@ -236,12 +236,12 @@ const Sales = () => {
                   {t("availableCopies")}: {selectedBook.copies}
                 </p>
                 <p className="book-type-badge sale-badge">
-                  💰 {t("forSaleOnly")}
+                   {t("forSaleOnly")}
                 </p>
               </div>
 
               <div className="form-group">
-                <label>{t("customerName")} *</label>
+                <label>{t("customerName")} </label>
                 <input
                   type="text"
                   className="form-control"
@@ -255,22 +255,34 @@ const Sales = () => {
               <div className="form-group">
                 <label>{t("customerPhone")}</label>
                 <input
-                  type="tel"
+                  type="number"
                   className="form-control"
                   placeholder={t("enterCustomerPhone")}
                   value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if(value === ' ' || parseInt(value) >= 0 ) {
+                      setCustomerPhone(e.target.value)}
+                    }
+                  }
+                  min="0"
                 />
               </div>
 
               <div className="form-group">
-                <label>{t("salePrice")} *</label>
+                <label>{t("salePrice")} </label>
                 <input
                   type="number"
                   className="form-control"
                   placeholder={t("enterSalePrice")}
                   value={salePrice}
-                  onChange={(e) => setSalePrice(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === ' ' || parseInt(value) >= 0){
+
+                      setSalePrice(e.target.value)}
+                    }
+                  }
                   min="0"
                   step="0.01"
                   required
@@ -282,7 +294,7 @@ const Sales = () => {
                 <p>{t("copiesAfterSale")}: <strong>{selectedBook.copies - 1}</strong></p>
                 <p>{t("amountToReceive")}: <strong>${salePrice}</strong></p>
                 {selectedBook.copies - 1 === 0 && (
-                  <p className="text-warning">⚠️ {t("lastCopyWarning")}</p>
+                  <p className="text-warning"> {t("lastCopyWarning")}</p>
                 )}
               </div>
             </div>

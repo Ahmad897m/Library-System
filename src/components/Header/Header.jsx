@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import './header.css'
-import { Container, Navbar, Form, FormControl, Dropdown, ListGroup } from "react-bootstrap";
+import { Container, Navbar, Form, FormControl, Dropdown, ListGroup, Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from '../../redux/hooks';
 import { selectBooks } from '../../redux/slices/bookSlice';
 import { useNavigate } from 'react-router-dom';
 
-const Header = () => {
+const Header = ({ onLogout }) => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const isArabic = i18n.language === 'ar';
@@ -71,12 +71,19 @@ const Header = () => {
         setShowResults(false);
     };
 
+    // تسجيل الخروج
+    const handleLogout = () => {
+        if (window.confirm(t("confirmLogout"))) {
+            onLogout();
+        }
+    };
+
     return (
         <Navbar bg="light" expand="lg" className="shadow-sm" style={{ height: '70px', 
             direction: isArabic ? 'rtl' : 'ltr',
             textAlign: isArabic ? 'right' : 'left' }}>
             <Container fluid>
-                <Navbar.Brand href="/" className="fw-bold">
+                <Navbar.Brand href="/dashboard" className="fw-bold">
                     {t("libraryManagement")}
                 </Navbar.Brand>
 
@@ -141,6 +148,16 @@ const Header = () => {
                         </div>
                     )}
                 </div>
+
+                {/* زر تسجيل الخروج */}
+                <Button 
+                    variant="outline-danger" 
+                    onClick={handleLogout}
+                    className="logout-btn"
+                    style={{ marginLeft: '10px' , width: "20%", marginBottom: "20px" }}
+                >
+                 {t("logout")}
+                </Button>
             </Container>
         </Navbar>
     );

@@ -112,7 +112,7 @@ const AddBook = () => {
     return(
         <>
             <div className="container mt-4">
-                <h3> {t('addNewBook')}</h3>
+                <h3>➕ {t('addNewBook')}</h3>
 
                 {successMessage && (
                     <div className="alert alert-success mt-3" role="alert">
@@ -133,7 +133,16 @@ const AddBook = () => {
 
                     <div className="mb-3">
                         <label className="form-label">{t('releaseDate')}</label>
-                        <input type="date" className="form-control" name="publishedDate" value={book.publishedDate} onChange={handleChange}  />
+                        <input 
+                        type="date" 
+                        className="form-control" 
+                        name="publishedDate" 
+                        value={book.publishedDate} 
+                        onChange={handleChange}  
+                        min="1500-01-01"
+                        max={new Date().toISOString().split("T")[0]} 
+                        />
+
                     </div>
 
                     <div className="mb-3">

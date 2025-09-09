@@ -27,7 +27,13 @@ const transactionsSlice = createSlice({
       localStorageService.saveTransactions(transactions);
       state.transactions = transactions;
     },
-    
+
+    // حذف اشعار
+    deleteTransaction: (state, action) => {
+  const transactionId = action.payload;
+  state.transactions = state.transactions.filter(t => t.id !== transactionId);
+  localStorageService.saveTransactions(state.transactions);
+},
     // تحديث معاملة (لإرجاع الكتاب)
     updateTransaction: (state, action) => {
       const { id, updates } = action.payload;
@@ -71,6 +77,7 @@ export const {
   clearTransactionFilters,
   setLoading,
   setError,
+  deleteTransaction,
 } = transactionsSlice.actions;
 
 // Selectors

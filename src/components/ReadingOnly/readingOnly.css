@@ -194,7 +194,6 @@
 }
 
 .reading-badge {
-  background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
   color: white;
 }
 
@@ -428,10 +427,6 @@
   margin-top: 10px;
 }
 
-.reading-badge {
-  background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
-  color: white;
-}
 
 .form-group {
   margin-bottom: 20px;
@@ -666,10 +661,7 @@
   margin-top: 10px;
 }
 
-.reading-badge {
-  background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
-  color: white;
-}
+
 
 .form-group {
   margin-bottom: 20px;

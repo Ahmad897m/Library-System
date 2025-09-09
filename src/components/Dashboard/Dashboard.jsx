@@ -32,31 +32,37 @@ const Dashboard = () => {
       .toFixed(2);
   };
 
-  // حساب عدد عمليات الإعارة
-  const countBorrowTransactions = () => {
-    return transactions.filter(t => t.action === 'Borrow').length;
+  // حساب إجمالي دخل جلسات القراءة
+  const calculateReadingIncome = () => {
+    return transactions
+      .filter(t => t.action === 'Read')
+      .reduce((total, transaction) => total + (parseFloat(transaction.price) || 0), 0)
+      .toFixed(2);
   };
+
+  // حساب عدد عمليات الإعارة
+  const countBorrowTransactions = () => transactions.filter(t => t.action === 'Borrow').length;
 
   // حساب عدد عمليات المبيعات
-  const countSalesTransactions = () => {
-    return transactions.filter(t => t.action === 'Buy').length;
-  };
+  const countSalesTransactions = () => transactions.filter(t => t.action === 'Buy').length;
 
-  // حساب عدد عمليات القراءة
-  const countReadingTransactions = () => {
-    return transactions.filter(t => t.action === 'Read').length;
-  };
+  // حساب عدد جلسات القراءة
+  const countReadingTransactions = () => transactions.filter(t => t.action === 'Read').length;
 
   // حساب عدد الكتب المعارة حالياً
   const countCurrentlyBorrowed = () => {
     return transactions.filter(t => 
       t.action === 'Borrow' && 
+      !t.returned &&
+      t.returnDate &&
       new Date(t.returnDate) > new Date()
     ).length;
   };
 
   const borrowIncome = calculateBorrowIncome();
   const salesIncome = calculateSalesIncome();
+  const readingIncome = calculateReadingIncome();
+
   const borrowCount = countBorrowTransactions();
   const salesCount = countSalesTransactions();
   const readingCount = countReadingTransactions();
@@ -64,7 +70,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <h2 className="mb-4">{t('dashboardTitle')}</h2>
+      <h2 className="mb-4">📈 {t('dashboardTitle')}</h2>
 
       <div className="stats-cards">
         {/* البطاقات الأساسية */}
@@ -83,7 +89,7 @@ const Dashboard = () => {
         {/* بطاقات الإعارة */}
         <div className="card stat-card borrow-stats">
           <div className="stat-icon">🔄</div>
-          <h5>{t('borrowedBooks')}</h5>
+          <h5>{t('totalBorrows')}</h5>
           <p className="stat-number">{stats.borrowedBooks}</p>
           <small className="stat-subtext">{t('currentlyBorrowed')}: {currentlyBorrowed}</small>
         </div>
@@ -98,9 +104,9 @@ const Dashboard = () => {
         {/* بطاقات المبيعات */}
         <div className="card stat-card sales-stats">
           <div className="stat-icon">💰</div>
-          <h5>{t('soldBooks')}</h5>
+          <h5>{t('totalSales')}</h5>
           <p className="stat-number">{stats.soldBooks}</p>
-          <small className="stat-subtext">{t('totalSales')}: {salesCount}</small>
+          <small className="stat-subtext">{t('booksSold')}: {stats.soldBooks}</small>
         </div>
 
         <div className="card stat-card sales-income">
@@ -113,9 +119,16 @@ const Dashboard = () => {
         {/* بطاقات القراءة */}
         <div className="card stat-card reading-stats">
           <div className="stat-icon">📖</div>
-          <h5>{t('readInsideLibrary')}</h5>
+          <h5>{t('totalReadings')}</h5>
           <p className="stat-number">{stats.readInLibrary}</p>
-          <small className="stat-subtext">{t('totalReadings')}: {readingCount}</small>
+          <small className="stat-subtext">{t('readingSessions')}: {readingCount}</small>
+        </div>
+
+        <div className="card stat-card reading-income">
+          <div className="stat-icon">📖</div>
+          <h5>{t('readingIncome')}</h5>
+          <p className="stat-number">${readingIncome}</p>
+          <small className="stat-subtext">{t('from')} {readingCount} {t('transactions')}</small>
         </div>
 
         {/* بطاقة إجمالي الدخل */}
@@ -123,7 +136,7 @@ const Dashboard = () => {
           <div className="stat-icon">💎</div>
           <h5>{t('totalIncome')}</h5>
           <p className="stat-number">
-            ${(parseFloat(borrowIncome) + parseFloat(salesIncome)).toFixed(2)}
+            ${(parseFloat(borrowIncome) + parseFloat(salesIncome) + parseFloat(readingIncome)).toFixed(2)}
           </p>
           <small className="stat-subtext">{t('salesAndBorrows')}</small>
         </div>
@@ -132,13 +145,14 @@ const Dashboard = () => {
       {/* إحصائيات مفصلة */}
       <div className="detailed-stats mt-5">
         <div className="row">
+          {/* إحصاءات الإعارة */}
           <div className="col-md-4">
             <div className="card stat-detail-card">
               <h5>📈 {t('borrowStatistics')}</h5>
               <div className="stat-details">
                 <div className="stat-detail-item">
                   <span>{t('totalBorrows')}:</span>
-                  <strong>{borrowCount}</strong>
+                  <strong>{stats.borrowedBooks}</strong>
                 </div>
                 <div className="stat-detail-item">
                   <span>{t('activeBorrows')}:</span>
@@ -147,7 +161,7 @@ const Dashboard = () => {
                 <div className="stat-detail-item">
                   <span>{t('averageBorrowPrice')}:</span>
                   <strong>
-                    ${borrowCount > 0 ? (parseFloat(borrowIncome) / borrowCount).toFixed(2) : '0.00'}
+                    ${stats.borrowedBooks > 0 ? (parseFloat(borrowIncome) / stats.borrowedBooks).toFixed(2) : '0.00'}
                   </strong>
                 </div>
                 <div className="stat-detail-item">
@@ -158,13 +172,14 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* إحصاءات المبيعات */}
           <div className="col-md-4">
             <div className="card stat-detail-card">
               <h5>🛒 {t('salesStatistics')}</h5>
               <div className="stat-details">
                 <div className="stat-detail-item">
                   <span>{t('totalSales')}:</span>
-                  <strong>{salesCount}</strong>
+                  <strong>{stats.soldBooks}</strong>
                 </div>
                 <div className="stat-detail-item">
                   <span>{t('booksSold')}:</span>
@@ -173,7 +188,7 @@ const Dashboard = () => {
                 <div className="stat-detail-item">
                   <span>{t('averageSalePrice')}:</span>
                   <strong>
-                    ${salesCount > 0 ? (parseFloat(salesIncome) / salesCount).toFixed(2) : '0.00'}
+                    ${stats.soldBooks > 0 ? (parseFloat(salesIncome) / stats.soldBooks).toFixed(2) : '0.00'}
                   </strong>
                 </div>
                 <div className="stat-detail-item">
@@ -184,16 +199,13 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* إحصاءات القراءة */}
           <div className="col-md-4">
             <div className="card stat-detail-card">
               <h5>📖 {t('readingStatistics')}</h5>
               <div className="stat-details">
                 <div className="stat-detail-item">
                   <span>{t('totalReadings')}:</span>
-                  <strong>{readingCount}</strong>
-                </div>
-                <div className="stat-detail-item">
-                  <span>{t('booksRead')}:</span>
                   <strong>{stats.readInLibrary}</strong>
                 </div>
                 <div className="stat-detail-item">
@@ -201,11 +213,15 @@ const Dashboard = () => {
                   <strong>{readingCount}</strong>
                 </div>
                 <div className="stat-detail-item">
+                  <span>{t('totalReadingIncome')}:</span>
+                  <strong>${readingIncome}</strong>
+                </div>
+                <div className="stat-detail-item">
                   <span>{t('popularActivity')}:</span>
                   <strong>
-                    {Math.max(borrowCount, salesCount, readingCount) === borrowCount && t('borrowing')}
-                    {Math.max(borrowCount, salesCount, readingCount) === salesCount && t('buying')}
-                    {Math.max(borrowCount, salesCount, readingCount) === readingCount && t('reading')}
+                    {Math.max(stats.borrowedBooks, stats.soldBooks, stats.readInLibrary) === stats.borrowedBooks && t('borrowing')}
+                    {Math.max(stats.borrowedBooks, stats.soldBooks, stats.readInLibrary) === stats.soldBooks && t('buying')}
+                    {Math.max(stats.borrowedBooks, stats.soldBooks, stats.readInLibrary) === stats.readInLibrary && t('reading')}
                   </strong>
                 </div>
               </div>
@@ -214,6 +230,7 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* الكتب المضافة مؤخراً */}
       <div className="recent-section mt-5">
         <h4>{t('recentlyAddedBooks')}</h4>
         <table className="recent-table">

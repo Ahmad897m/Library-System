@@ -72,24 +72,25 @@ const ReadingOnly = () => {
     dispatch(addCustomer(customerData));
 
     // إعداد بيانات المعاملة - للقراءة فقط بدون أي حقول للإعارة
-    const transactionData = {
-      id: `read-${Date.now()}`,
-      customerId: customerId,
-      customerName: customerName,
-      customerPhone: customerPhone,
-      bookId: selectedBook.id,
-      bookTitle: selectedBook.title,
-      author: selectedBook.author,
-      category: selectedBook.category,
-      action: "Read",
-      price: 0,
-      timestamp: new Date().toISOString(),
-      status: 'active_reading',
-      sessionStart: new Date().toISOString(),
-      sessionType: 'reading',
-      returned: false
-      // لا تضيف أي حقول متعلقة بالإعارة هنا
-    };
+   // إعداد بيانات المعاملة - للقراءة
+const transactionData = {
+  id: `read-${Date.now()}`,
+  customerId: customerId,
+  customerName: customerName,
+  customerPhone: customerPhone,
+  bookId: selectedBook.id,
+  bookTitle: selectedBook.title,
+  author: selectedBook.author,
+  category: selectedBook.category,
+  action: "Read",
+  price: 5, // <-- تم تعديل السعر ليضيف 1 دولار لكل جلسة قراءة
+  timestamp: new Date().toISOString(),
+  status: 'active_reading',
+  sessionStart: new Date().toISOString(),
+  sessionType: 'reading',
+  returned: false
+};
+
 
     // إضافة المعاملة
     dispatch(addTransaction(transactionData));
@@ -246,12 +247,12 @@ const ReadingOnly = () => {
                   {t("availableCopies")}: {selectedBook.copies}
                 </p>
                 <p className="book-type-badge reading-badge">
-                  📖 {t("forReadingOnly")}
+                   {t("forReadingOnly")}
                 </p>
               </div>
 
               <div className="form-group">
-                <label>{t("customerName")} *</label>
+                <label>{t("customerName")} </label>
                 <input
                   type="text"
                   className="form-control"
@@ -265,11 +266,17 @@ const ReadingOnly = () => {
               <div className="form-group">
                 <label>{t("customerPhone")}</label>
                 <input
-                  type="tel"
+                  type="number"
                   className="form-control"
                   placeholder={t("enterCustomerPhone")}
                   value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  onChange={(e) =>  {
+                    const value = e.target.value;
+                    if(value === '' || parseInt(value) >= 0) { 
+                      setCustomerPhone(e.target.value);
+                      }
+                  }}
+                  min = "0"
                 />
               </div>
 

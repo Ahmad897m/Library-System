@@ -11,3 +11,18 @@
 .nav-link:hover {
     color: chocolate;
 }
+
+
+.logout-btn {
+  width: 100%;
+  margin-top: 20px;
+  /* display: block; */
+}
+
+/* تصميم متجاوب */
+@media (max-width: 768px) {
+  .logout-btn {
+    font-size: 0.8rem;
+    padding: 8px;
+  }
+}
