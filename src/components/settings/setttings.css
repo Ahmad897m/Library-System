@@ -4,6 +4,11 @@
     /* padding: 15px; */
 }
 
+.changeBtn:hover {
+  background-color: chocolate;
+  color: white;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0; 

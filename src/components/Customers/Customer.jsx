@@ -85,17 +85,17 @@ const Customer = () => {
   };
 
   // حذف المعاملات حسب النوع
-  const handleDeleteByType = (type) => {
-    if (window.confirm(t("confirmDeleteTypeTransactions", { type: t(type.toLowerCase()) }))) {
-      const transactionsToDelete = sortedTransactions.filter(t => t.action === type);
-      const transactionIds = transactionsToDelete.map(t => t.id);
-      setDeletingTransactions(transactionIds);
-      setTimeout(() => {
-        transactionIds.forEach(id => dispatch(deleteTransaction(id)));
-        setDeletingTransactions([]);
-      }, 500);
-    }
-  };
+  // const handleDeleteByType = (type) => {
+  //   if (window.confirm(t("confirmDeleteTypeTransactions", { type: t(type.toLowerCase()) }))) {
+  //     const transactionsToDelete = sortedTransactions.filter(t => t.action === type);
+  //     const transactionIds = transactionsToDelete.map(t => t.id);
+  //     setDeletingTransactions(transactionIds);
+  //     setTimeout(() => {
+  //       transactionIds.forEach(id => dispatch(deleteTransaction(id)));
+  //       setDeletingTransactions([]);
+  //     }, 500);
+  //   }
+  // };
 
   // تنسيق الوقت المتبقي
   const formatTimeRemaining = (returnDate) => {
@@ -265,8 +265,16 @@ const Customer = () => {
 
               <div className="session-details">
                 <div className="session-info">
-                  <p><strong>{t("borrowDate")}:</strong> {new Date(session.borrowDate).toLocaleDateString()}</p>
-                  <p><strong>{t("returnDate")}:</strong> {new Date(session.returnDate).toLocaleDateString()}</p>
+                  <p><strong>{t("borrowDate")}:</strong> {new Date(session.borrowDate).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit"
+                })}</p>
+                  <p><strong>{t("returnDate")}:</strong>{new Date(session.returnDate).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit"
+                })}</p>
                   <p><strong>{t("price")}:</strong> ${session.price}</p>
                   <p><strong>{t("period")}:</strong> {session.borrowPeriod} {t("days")}</p>
                 </div>
@@ -316,7 +324,11 @@ const Customer = () => {
                 <div className="session-info">
                   <p><strong>{t("author")}:</strong> {session.author}</p>
                   <p><strong>{t("category")}:</strong> {session.category}</p>
-                  <p><strong>{t("startTime")}:</strong> {new Date(session.sessionStart).toLocaleString()}</p>
+                  <p><strong>{t("startTime")}:</strong> {new Date(session.sessionStart).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit"
+                    })} </p>
                   <p><strong>{t("duration")}:</strong> {sessionDuration} {t("minutes")}</p>
                 </div>
               </div>

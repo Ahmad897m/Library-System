@@ -157,12 +157,13 @@
   background-color: #f8f9fa;
   padding: 12px;
   font-weight: bold;
-  text-align: left;
+  text-align: center;
 }
 
 .recent-table td {
   padding: 12px;
   border-bottom: 1px solid #ddd;
+  text-align: center;
 }
 
 .status-badge {
