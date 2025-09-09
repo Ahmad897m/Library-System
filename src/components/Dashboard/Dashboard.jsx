@@ -256,7 +256,13 @@ const Dashboard = () => {
                   </span>
                 </td>
                 <td>${book.price}</td>
-                <td>{new Date(book.addedDate).toLocaleDateString("en-US")}</td>
+              <td>
+                {new Date(book.addedDate).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit"
+                })}
+              </td>
               </tr>
             ))}
           </tbody>
